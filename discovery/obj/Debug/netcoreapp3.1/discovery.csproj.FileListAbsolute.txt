@@ -236,3 +236,4 @@ E:\Projects\patterndiscovery\PatternDiscovery\discovery\bin\Debug\netcoreapp3.1\
 E:\Projects\patterndiscovery\PatternDiscovery\discovery\bin\Debug\netcoreapp3.1\System.ComponentModel.Annotations.dll
 E:\Projects\patterndiscovery\PatternDiscovery\discovery\bin\Debug\netcoreapp3.1\System.Diagnostics.DiagnosticSource.dll
 E:\Projects\patterndiscovery\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\discovery.MvcApplicationPartsAssemblyInfo.cache
+E:\Projects\patterndiscovery\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\patterns\Index.cshtml.g.cs

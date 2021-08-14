@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using discovery.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace discovery.Controllers
 {
@@ -15,15 +17,11 @@ namespace discovery.Controllers
             return View();
         }
 
-        // GET: patterns/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: patterns/Create
         public ActionResult Create()
         {
+            //Load category models from a hook method
+            ViewBag.categories = new SelectList(patternsviewmodel.getCategories(), "Value", "Text");
             return View();
         }
 
@@ -31,7 +29,7 @@ namespace discovery.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(IFormCollection collection)
-        {
+        {=
             try
             {
                 // TODO: Add insert logic here
@@ -67,16 +65,10 @@ namespace discovery.Controllers
             }
         }
 
-        // GET: patterns/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
 
-        // POST: patterns/Delete/5
-        [HttpPost]
+
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id)
         {
             try
             {
