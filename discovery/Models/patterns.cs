@@ -16,9 +16,9 @@ namespace discovery.Models
         public int ID { get; set; }
         
         [Required]
-        public string text { get; set; }
+        public string title { get; set; }
 
-        public string category { get; set; }
+        public int category { get; set; }
 
     }
 }

@@ -1,35 +1,33 @@
 ﻿@model discovery.Models.patternsviewmodel
 
-<h4>patterns</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">Create Pattern</h3>
+        <a href="~/patterns"> <span class="fa fa-fast-backward fa-backward float-right"></span></a>
+    </div>
+    <!-- /.card-header -->
+    <!-- form start -->
+    <form action="~/patterns/Create" method="post">
+        @Html.AntiForgeryToken()
+        <div class="card-body">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="ID" class="control-label"></label>
-                <input asp-for="ID" class="form-control" />
-                <span asp-validation-for="ID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="text" class="control-label"></label>
-                <input asp-for="text" class="form-control" />
+                <label asp-for="text" class="control-label"> Title: </label>
+                @Html.TextBoxFor(model => model.title)
                 <span asp-validation-for="text" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="category" class="control-label"></label>
-                @Html.DropDownList("categories",null,"Select one item from the list")
-                @*<input asp-for="category" class="form-control" />*@
+                <label asp-for="category" class="control-label">Category: </label>
+                @Html.DropDownList("category", null, "Select one item from the list")
                 <span asp-validation-for="category" class="text-danger"></span>
             </div>
+        </div>
+        <div class="card-footer">
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 

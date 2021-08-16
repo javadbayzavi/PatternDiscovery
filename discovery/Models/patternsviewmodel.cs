@@ -13,13 +13,30 @@ namespace discovery.Models
     //This model hold the name of patterns which are applied to minining function in order to find any result
     public class patternsviewmodel
     {
+        private enum categories
+        {
+            Structural = 1,
+            Behavioral,
+            Creational,
+            Concurrency
+        }
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         
         [Required]
-        public string text { get; set; }
-
-        public string category { get; set; }
+        public string title { get; set; }
+        
+        private categories _catnumber;
+        public string category { 
+            get
+            {
+                return this._catnumber.ToString();
+            }
+            set
+            {
+                this._catnumber =(categories)Convert.ToInt32(value);
+            }
+        }
 
         //Hook method to generated default list of categories.
         public static List<SelectListItem> getCategories()
