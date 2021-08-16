@@ -13,5 +13,9 @@ namespace discovery.Library.Core
         public const string _BEHAVIORAL = "Behavioral";
         public const string _CREATIONAL = "Creational";
         public const string _CONCURRENCY = "Concurrency";
+
+        public const string _REMOTEADDRESS = "https://mail.python.org/pipermail/python-dev/";
+        public const string _REMOTEURL = "remoteURL";
+        public const string _TEMPDIRECTORY = "wwwroot/temp/";
     }
 }

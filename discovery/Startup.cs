@@ -21,11 +21,7 @@ namespace discovery
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            //services.AddDbContext<discoveryContext>(options =>
-            //options.UseSqlServer(
-            //    Configuration.GetConnectionString("discoveryDB")
-            //    )
-            //);
+            services.AddSession();
         }
 
         public Startup(IConfiguration config)
@@ -40,6 +36,7 @@ namespace discovery
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseSession();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseEndpoints(endpoints =>

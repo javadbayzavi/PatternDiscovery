@@ -20,8 +20,8 @@ namespace discovery.Models
         //Date of the publish
         public string date { get; set; }
 
-        //Which part of the mail document contains the patterns
-        public int author { get; set; }
+        //Author of the document
+        public string author { get; set; }
         
         //Title of the mail document
         public string body { get; set; }

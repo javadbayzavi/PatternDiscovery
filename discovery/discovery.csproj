@@ -1915,4 +1915,8 @@
     <None Include="wwwroot\scripts\plugins\uplot\uPlot.min.css" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\temp\" />
+  </ItemGroup>
+
 </Project>

@@ -7,6 +7,6 @@ namespace discovery.Library.zip
 {
     public interface IUnzipper
     {
-        void unzip(string filename);
+        string unzip();
     }
 }

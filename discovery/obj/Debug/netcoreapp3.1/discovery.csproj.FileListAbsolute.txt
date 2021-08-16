@@ -398,3 +398,5 @@ E:\PatternDiscovery\discovery\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Confi
 E:\PatternDiscovery\discovery\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.Binder.dll
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\patterns\Edit.cshtml.g.cs
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\dataset\Index.cshtml.g.cs
+E:\PatternDiscovery\discovery\bin\Debug\netcoreapp3.1\HtmlAgilityPack.dll
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\dataset\LoadRemoteFileList.cshtml.g.cs
