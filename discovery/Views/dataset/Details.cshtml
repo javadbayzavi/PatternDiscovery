@@ -1,0 +1,58 @@
+﻿@model discovery.Models.dataset
+@{
+
+}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Dataset Details</h3>
+        <a href="~/dataset/List"> <span class="fa fa-fast-backward fa-backward float-right"></span></a>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="datasettbl" class="table table-bordered table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <td>
+                        @Model.ID
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Subject
+                    </th>
+                    <td>
+                        @Model.subject
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Author
+                    </th>
+                    <td>
+                        @Model.author
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <td>
+                        @Model.date
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Body
+                    </th>
+                    <td>
+                        @Model.body
+                    </td>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <!-- /.card-body -->
+</div>

@@ -1,0 +1,93 @@
+﻿@model IEnumerable<discovery.Models.datasetviewmodel>
+@{
+
+}
+<p>
+    <span class="bg-primary">
+        @Html.ActionLink("Create New", "Create")
+    </span>
+</p>
+<!-- DataTables -->
+<link rel="stylesheet" href="~/scripts/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/scripts/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/scripts//plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Dataset list</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="datasettbl" class="table table-bordered table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Subject
+                    </th>
+                    <th>
+                        Author
+                    </th>
+                    <th>
+                        Date
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model.ToList())
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.subject)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.author)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.date)
+                        </td>
+                        <td>
+                            <a href="~/dataset/Edit/@(item.ID.ToString())" title="Edit @(item.subject)"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                            <a href="~/dataset/Details/@(item.ID.ToString())" title="Show details of @(item.subject)"><i class="fa fa-info" aria-hidden="true"></i></a>
+                            <a href="~/dataset/Delete/@(item.ID.ToString())" title="Delete @(item.subject)"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- /.card-body -->
+</div>
+<!-- /.card -->
+<script src="~/scripts/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/scripts/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/scripts/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/jszip/jszip.min.js"></script>
+<script src="~/scripts/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/scripts/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+    $(function () {
+        $("#datasettbl").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+        }).buttons().container().appendTo('#datasettbl_wrapper .col-md-6:eq(0)');
+    });
+</script>

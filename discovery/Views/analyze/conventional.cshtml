@@ -1,0 +1,147 @@
+﻿@model IEnumerable<discovery.Models.patterns>
+
+<!-- DataTables -->
+<link rel="stylesheet" href="~/scripts/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/scripts/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/scripts//plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Conventional Analyze</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <p>
+            To start mining select as much as like from pattern list and then hit 'Analyze...' botton at the bottom of this page
+        </p>
+        <p></p>
+        <form action="~/analyze/conventional/" method="post" id="analyzefrm">
+            @Html.AntiForgeryToken()
+            <table id="patterntbl" class="table table-bordered table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" name="select_all" value="1" id="pattern-select-all"></th>
+                        <th>
+                            ID
+                        </th>
+                        <th>
+                            Pattern
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.ToList())
+                    {
+                        <tr>
+                            <td></td>
+                            <td>
+                                @*<input type="hidden" name="id[]" value="" />*@
+                                @Html.DisplayFor(modelItem => item.ID)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.title)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.category)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col">
+                    <input class="form-control btn-primary m-1" type="submit" value="Analyze..." />
+                </div>
+            </div>
+        </form>
+    </div>
+    <!-- /.card-body -->
+</div>
+<!-- /.card -->
+<script src="~/scripts/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/scripts/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/scripts/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/jszip/jszip.min.js"></script>
+<script src="~/scripts/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/scripts/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+    $(function () {
+       var table = $('#patterntbl').DataTable({
+            'columnDefs': [{
+                'targets': 0,
+                'searchable': false,
+                'orderable': false,
+                'className': 'dt-body-center',
+                'render': function (data, type, full, meta) {
+                    //return '<input type="checkbox" name="id[]" value="' + $(this).parent().next().html() + '">';
+                    return '<input type="checkbox" name="id[]" value="' + $('<td/>').text(data).html() + '">';
+                }
+            }],
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            'order': [[1, 'asc']],
+        }).buttons().container().appendTo('#patterntbl_wrapper .col-md-6:eq(0)');
+
+        // Handle click on "Select all" control
+        $('#pattern-select-all').on('click', function () {
+            // Get all rows with search applied
+
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            // Check/uncheck checkboxes for all rows in the table
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+
+        // Handle click on checkbox to set state of "Select all" control
+        $('#patterntbl tbody').on('change', 'input[type="checkbox"]', function () {
+            $(this).val(($(this).parent().next().html()).trim());
+            // If checkbox is not checked
+            if (!this.checked) {
+                var el = $('#pattern-select-all').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if (el && el.checked && ('indeterminate' in el)) {
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+        // Handle form submission event
+        $('#analyzefrm').on('submit', function (e) {
+            var form = this;
+
+            // Iterate over all checkboxes in the table
+            table.$('input[type="checkbox"]').each(function () {
+                // If checkbox doesn't exist in DOM
+               // if (!$.contains(document, this)) {
+                    // If checkbox is checked
+                    if (this.checked) {
+                        // Create a hidden element
+                        $(form).append(
+                            $('<input>')
+                                .attr('type', 'hidden')
+                                .attr('name', this.name)
+                                .val(this.val)
+                        );
+                    }
+               // }
+            });
+        });
+    });
+
+</script>

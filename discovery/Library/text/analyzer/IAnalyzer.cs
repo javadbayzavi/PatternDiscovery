@@ -7,7 +7,8 @@ namespace discovery.Library.text.analyzer
 {
     public interface IAnalyzer
     {
+        void Analyze(string pattern);
         void Tokenize();
-        void Normlize();
+        void SubmitResult(ISubmitter submitter);
     }
 }

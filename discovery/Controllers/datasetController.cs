@@ -14,98 +14,45 @@ using Newtonsoft.Json;
 
 namespace discovery.Controllers
 {
-    public class datasetController : BaseController
+    public partial class datasetController : BaseController
     {
-        private List<IReadable> documents = new List<IReadable>();
-        // GET: dataset/
+        // GET: dataset/Index
         public ActionResult Index()
         {
-            string url = this.HttpContext.Session.GetString(Keys._REMOTEURL);
-            if(System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Length > 0 && url != null)
-            {
-                //latest versions of raw file has downloaded
-
-            }
-            {
-                //donwloaded files must be replaced with new version from the remote url
-            }
-            return View();
+            return RedirectToAction("List");
         }
-
-        // post: dataset/FetchRemoteFiles
-        [HttpPost]
-        public ActionResult FetchRemoteFiles()
+        // GET: dataset/List
+        public ActionResult List()
         {
-            string url = this.HttpContext.Session.GetString(Keys._REMOTEURL);
-            var downlaoded = Fileoperations.downloadFiles(ref url);
-            if (downlaoded)
+            var datasets = this.ormProxy.dataset.Select(item =>
+            new datasetviewmodel()
             {
-                //After successfully downloading all remote files session address sets to null that shows the operation can run from the start again
-                this.HttpContext.Session.SetString(Keys._REMOTEURL, "");
-                return RedirectToAction("ImportData");
-            }
-            else
-                return RedirectToAction("LoadRemoteFileList");
-        }
-        public ActionResult LoadRemoteFileList()
-        {
-            return View();
-        }
-        //POST: dataset/LoadRemoteFileList
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult LoadRemoteFileList(string url)
-        {
-            try
-            {
-                var files = Fileoperations.getFileList(ref url).Select(a =>
-                    new filelistview()
-                        {
-                            filename = a.filename,
-                            fileurl = a.fileurl
-                        }
-                    ).ToList();
-                this.HttpContext.Session.SetString(Keys._REMOTEURL,url);
-                return View(files);
-            }
-            catch(Exception ex)
-            {
-                return View();
-            }
+                author = item.author,
+                date = item.date,
+                ID = item.ID,
+                subject = item.subject
+            });
+            //Load category models from a hook method
+            return View(datasets);
         }
 
-        // GET: dataset/ImportData/
-        public ActionResult ImportData()
-        {
-            //Use factory method to create appropriate file document based on downloaded file in temp directory
-            var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Select(a =>
-                new filefactory(a).createData()
-            );
-
-            //temp list of extracted data from documents
-            var datasets = new List<dataset>();
-            foreach (var file in files)
-            {
-                var item = new dataset();
-                //Read document content through template method
-                file.Read(ref item);
-
-                datasets.Add(item);
-            }
-
-            //import data into database
-            //this.ormProxy.dataset.AddRange(datasets);
-            //this.ormProxy.SaveChanges();
-
-            return View();
-        }
-
-        // GET: dataset/Edit/5
+        // GET: dataset/Create
         public ActionResult Create()
         {
+            //Load category models from a hook method
+            return View();
+        }
+
+        // POST: dataset/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(dataset collection)
+        {
             try
             {
-                return View();
+                this.ormProxy.dataset.Add(collection);
+                this.ormProxy.SaveChanges();
+                return RedirectToAction("List");
             }
             catch
             {
@@ -113,12 +60,43 @@ namespace discovery.Controllers
             }
         }
 
+        // GET: dataset/Edit/5
+        public ActionResult Edit(int id)
+        {
+            var item = this.ormProxy.dataset.First(a => a.ID == id);
+            return View(item);
+        }
+
+        // POST: dataset/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, dataset collection)
+        {
+            try
+            {
+                this.ormProxy.dataset.Update(collection);
+                this.ormProxy.SaveChanges();
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+        // GET: dataset/Details/5
+        public ActionResult Details(int id)
+        {
+            var item = this.ormProxy.dataset.First(a => a.ID == id);
+            return View(item);
+        }
+
+        // GET: dataset/Delete/5
         public ActionResult Delete(int id)
         {
             try
             {
-                var item = this.ormProxy.patterns.FirstOrDefault(a => a.ID == id);
-                this.ormProxy.patterns.Remove(item);
+                var item = this.ormProxy.dataset.FirstOrDefault(a => a.ID == id);
+                this.ormProxy.dataset.Remove(item);
                 this.ormProxy.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }

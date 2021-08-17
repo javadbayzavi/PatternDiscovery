@@ -8,7 +8,7 @@ namespace discovery.Library.text
 {
     public class textfile : filedata
     {
-        string[] filecontent;
+        protected string[] filecontent;
         public textfile(string adres)
         {
             this.filename = adres;
@@ -21,8 +21,11 @@ namespace discovery.Library.text
             this.data.subject = this.filecontent[3].Substring(this.filecontent[3].IndexOf("Subject:")).Trim();
             //Indetify Date
             this.data.date = this.filecontent[2].Substring(this.filecontent[2].IndexOf("Date:")).Trim();
-            for (int index = 7; index < filecontent.Length; index++)
-                this.data.body += filecontent[index] + "/r/n";
+
+            //Remove document header and concate the remaining content into the body part of data
+            //this.filecontent = this.filecontent.Where((source, index) => index > 6).ToArray();
+            this.data.body = String.Join("\r\n", this.filecontent.Where((source, index) => index > 6).ToArray());
+            
             
         }
 
@@ -32,7 +35,7 @@ namespace discovery.Library.text
             this.filecontent = textfile.ReadfileLines(this.filename);
         }
 
-        public static string[] ReadfileLines(string address)
+        protected static string[] ReadfileLines(string address)
         {
             try
             {

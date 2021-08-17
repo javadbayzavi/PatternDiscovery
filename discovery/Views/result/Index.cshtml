@@ -1,0 +1,85 @@
+﻿@model IEnumerable<discovery.Models.resultviewmodel>
+<!-- DataTables -->
+<link rel="stylesheet" href="~/scripts/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/scripts/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/scripts//plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Analysis Result</h3>
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body">
+        <table id="resulttbl" class="table table-bordered table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        ID
+                    </th>
+                    <th>
+                        Pattern
+                    </th>
+                    <th>
+                        Category
+                    </th>
+                    <th>
+                        Subject
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model.ToList())
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ID)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.pattern)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.category.ToString())
+                        </td>
+                        <td>
+                            <a href="~/dataset/Details/@(item.datasetid)" title="Show Details of @(item.subject)">
+                                @Html.DisplayFor(modelItem => item.subject)
+                            </a>
+                        </td>
+                        <td>
+                            <a href="~/patterns/Details/@(item.ID.ToString())" title="Review result for @(item.pattern)"><i class="fa fa-envelope-open-text" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <!-- /.card-body -->
+</div>
+<!-- /.card -->
+<script src="~/scripts/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/scripts/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/scripts/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/scripts/plugins/jszip/jszip.min.js"></script>
+<script src="~/scripts/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/scripts/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/scripts/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+    $(function () {
+        $("#resulttbl").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+        }).buttons().container().appendTo('#resulttbl_wrapper .col-md-6:eq(0)');
+    });
+</script>

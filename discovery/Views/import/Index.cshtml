@@ -1,0 +1,64 @@
+﻿
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<div class="card">
+    <div class="card-header card-primary">
+        <h3> Wellcome to Import data</h3>
+    </div>
+    <div class="card-body">
+        <p>
+            In order to load dataset in to mining scenario, the follwoing steps must be taken carefully.
+        </p>
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-orange">
+                        <b>1. Downloadling remote data</b>
+                        <i class="fa fa-download float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            Connect to the remote repository using either pre-defined or entered address and donwload data files
+                        </p>
+                    </div>
+                    <div class="card-footer card-link text-center font-weight-bold">
+                        <a href="~/import/LoadRemoteFileList">Download</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-green">
+                        <b>2. Normalizing Data</b>
+                        <i class="fab fa-dochub float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            In order to properly load data set, firstly we analyze donwloaded file and normalize them (e.g. decoding, unzip and formatting)
+                        </p>
+                    </div>
+                    <div class="card-footer card-link text-center font-weight-bold">
+                        <a href="~/import/LoadRemoteFileList">Normalize</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-blue">
+                        <b>3. Import Data</b>
+                        <i class="fa fa-file-import float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            All the normalized content put into local data warehouse for later analysis.
+                        </p>
+                    </div>
+                    <div class="card-footer card-link text-center font-weight-bold">
+                        <a class="card-link" href="~/import/ImportData">Import</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

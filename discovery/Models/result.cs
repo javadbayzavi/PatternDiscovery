@@ -13,9 +13,11 @@ namespace discovery.Models
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
-        
+
+        [ForeignKey("patternid")]
+        public patterns pattern { get; set; }
         [Required]
-        public string pattern { get; set; }
+        public int patternid { get; set; }
 
         //Date of the publish
         [ForeignKey("datasetitemid")]

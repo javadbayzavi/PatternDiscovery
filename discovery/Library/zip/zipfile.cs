@@ -11,7 +11,6 @@ namespace discovery.Library.zip
 {
     public class zipfile : textfile, IUnzipper
     {
-        string[] filecontent;
         public zipfile(string adres):base(adres)
         {
             this.filename = adres;

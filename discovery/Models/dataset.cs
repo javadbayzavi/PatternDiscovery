@@ -9,12 +9,14 @@ using Microsoft.EntityFrameworkCore;
 namespace discovery.Models
 {
     //This model hold the information about mail document
+    [Serializable]
     public class dataset
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         
         [Required]
+        //Title of the mail document
         public string subject { get; set; }
 
         //Date of the publish
@@ -22,8 +24,8 @@ namespace discovery.Models
 
         //Author of the document
         public string author { get; set; }
-        
-        //Title of the mail document
+
+        //Body of the mail document
         public string body { get; set; }
         
     }
