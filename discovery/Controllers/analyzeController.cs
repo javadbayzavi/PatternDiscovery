@@ -18,6 +18,8 @@ namespace discovery.Controllers
         // GET: conventional
         public ActionResult Index()
         {
+            //Scenario Checking
+            ViewBag.currentScenario = (this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == null || this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == "");
             return View();
         }
 

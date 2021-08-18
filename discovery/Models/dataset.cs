@@ -27,6 +27,10 @@ namespace discovery.Models
 
         //Body of the mail document
         public string body { get; set; }
-        
+        public int scenarioid { get; set; }
+
+        [ForeignKey("scenarioid")]
+        public scenario scenario { get; set; }
+
     }
 }

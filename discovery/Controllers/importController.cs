@@ -20,6 +20,10 @@ namespace discovery.Controllers
         // GET: import
         public ActionResult Index()
         {
+            //Scenario Checking
+            ViewBag.currentScenario = (this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == null || this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == "");
+
+
             string url = this.HttpContext.Session.GetString(Keys._REMOTEURL);
             if(System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Length > 0 && url != null)
             {
@@ -32,9 +36,9 @@ namespace discovery.Controllers
             return View();
         }
 
-        // post: import/FetchRemoteFiles
+        // post: import/DownloadFiles
         [HttpPost]
-        public ActionResult FetchRemoteFiles()
+        public ActionResult DownloadFiles()
         {
             string url = this.HttpContext.Session.GetString(Keys._REMOTEURL);
             var downlaoded = Fileoperations.downloadFiles(ref url);
@@ -108,6 +112,12 @@ namespace discovery.Controllers
             this.ormProxy.SaveChanges();
 
             return RedirectToAction("Index");
+        }
+
+        private scenario getCurrentScenario()
+        {
+            var currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
+            return this.ormProxy.scenario.FirstOrDefault();
         }
     }
 }

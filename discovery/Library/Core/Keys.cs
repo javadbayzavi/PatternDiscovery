@@ -14,8 +14,23 @@ namespace discovery.Library.Core
         public const string _CREATIONAL = "Creational";
         public const string _CONCURRENCY = "Concurrency";
 
+        //Scenrario Related keys
+        public const string _AIBASED = "AIBased";
+        public const string _CONVENTIONAL = "Conventional";
+        public const string _FILE = "File";
+        public const string _EMAIL = "Email";
+        public const string _SERVICE = "Service";
+        public const string _CREATED = "Created";
+        public const string _DOWNLOADED = "Downloaded";
+        public const string _IMPORTTED = "Importted";
+        public const string _ANALYZED = "Anayzed";
+
         public const string _REMOTEADDRESS = "https://mail.python.org/pipermail/python-dev/";
         public const string _REMOTEURL = "remoteURL";
         public const string _TEMPDIRECTORY = "wwwroot/temp/";
+        public const string _SCENARIODIRECTORY = "wwwroot/temp/scenarios";
+
+        public const string _CURRENTSCENARIO = "currentScenario";
+
     }
 }

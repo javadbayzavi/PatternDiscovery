@@ -1,29 +1,7 @@
-﻿@model IEnumerable<discovery.Models.datasetviewmodel>
+﻿@model IEnumerable<discovery.Models.scenarioviewmodel>
 @{
-    bool scenario = (bool)ViewBag.currentScenario;
+
 }
-@*Scenario checking reaction*@
-@if (scenario)
-{
-                <div id="infomodal" class="modal" tabindex="-1" role="dialog" data-backdrop="static">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title">Text analyzer</h5>
-                            </div>
-                            <div class="modal-body">
-                                <p>There is no active scenario. First refer to Scenarios and start on scenario from the list</p>
-                            </div>
-                            <div class="modal-footer">
-                                @Html.ActionLink("Scenario List","Index","scenario")
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <script>
-                    $('#infomodal').modal(null)
-                </script>
-            }
 <p>
     <span class="bg-primary">
         @Html.ActionLink("Create New", "Create")
@@ -35,7 +13,7 @@
 <link rel="stylesheet" href="~/scripts//plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Dataset list</h3>
+        <h3 class="card-title">Scenario list</h3>
     </div>
     <!-- /.card-header -->
     <div class="card-body">
@@ -46,13 +24,19 @@
                         ID
                     </th>
                     <th>
-                        Subject
-                    </th>
-                    <th>
-                        Author
+                        Name
                     </th>
                     <th>
                         Date
+                    </th>
+                    <th>
+                        Type
+                    </th>
+                    <th>
+                        Method
+                    </th>
+                    <th>
+                        Status
                     </th>
                     <th></th>
                 </tr>
@@ -61,25 +45,40 @@
             <tbody>
                 @foreach (var item in Model.ToList())
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ID)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.subject)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.author)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.date)
-                        </td>
-                        <td>
-                            <a href="~/dataset/Edit/@(item.ID.ToString())" title="Edit @(item.subject)"><i class="fa fa-edit" aria-hidden="true"></i></a>
-                            <a href="~/dataset/Details/@(item.ID.ToString())" title="Show details of @(item.subject)"><i class="fa fa-info" aria-hidden="true"></i></a>
-                            <a href="~/dataset/Delete/@(item.ID.ToString())" title="Delete @(item.subject)"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                        </td>
-                    </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.createddate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.sourcetype)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.method)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.status)
+                    </td>
+
+                    <td>
+                        <a href="~/scenario/Edit/@(item.ID.ToString())" title="Edit @(item.name)"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                        <a href="~/scenario/Details/@(item.ID.ToString())" title="Show details of @(item.name)"><i class="fa fa-info" aria-hidden="true"></i></a>
+                        <a href="~/scenario/Delete/@(item.ID.ToString())" title="Delete @(item.name)"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                    @if (ViewBag.currentScenario != null && ViewBag.currentScenario == item.ID.ToString())
+                    {
+                        <a href="~/scenario/Start/@(item.ID.ToString())" title="Stop @(item.name)"><i class="fa fa-pause" aria-hidden="true"></i></a>
+                    }
+                    else
+	                {
+                        <a href="~/scenario/Start/@(item.ID.ToString())" title="Start @(item.name)"><i class="fa fa-play" aria-hidden="true"></i></a>
+	                }
+                    </td>
+                </tr>
                 }
             </tbody>
         </table>

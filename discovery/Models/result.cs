@@ -26,5 +26,10 @@ namespace discovery.Models
 
         //Which part of the mail document contains the patterns (Title, Body)
         public int partofdocument { get; set; }
+
+        public int scenarioid { get; set; }
+
+        [ForeignKey("scenarioid")]
+        public scenario scenario { get; set; }
     }
 }

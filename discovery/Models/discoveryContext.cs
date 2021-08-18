@@ -17,7 +17,8 @@ namespace discovery.Models
             
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=E:\\PatternDiscovery\\discovery\\db\\patternproject.mdf;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=patternproject;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+                //optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=E:\\PatternDiscovery\\discovery\\db\\patternproject.mdf;Integrated Security=True");
             }
         }
 
@@ -25,6 +26,7 @@ namespace discovery.Models
         public DbSet<patterns> patterns { get; set; }
         public DbSet<result> result { get; set; }
         public DbSet<dataset> dataset { get; set; }
+        public DbSet<scenario> scenario { get; set; }
     }
 
 

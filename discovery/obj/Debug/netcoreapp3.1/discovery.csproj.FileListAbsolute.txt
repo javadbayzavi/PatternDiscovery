@@ -416,3 +416,7 @@ E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\import\Index.c
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\import\LoadRemoteFileList.cshtml.g.cs
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\analyze\conventional.cshtml.g.cs
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\analyze\Index.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Create.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Details.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Edit.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Index.cshtml.g.cs

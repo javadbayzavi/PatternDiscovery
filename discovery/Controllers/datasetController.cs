@@ -19,12 +19,18 @@ namespace discovery.Controllers
         // GET: dataset/Index
         public ActionResult Index()
         {
-            return RedirectToAction("List");
+                return RedirectToAction("List");
         }
         // GET: dataset/List
         public ActionResult List()
         {
-            var datasets = this.ormProxy.dataset.Select(item =>
+            ViewBag.currentScenario = (this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == null || this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == "");
+            if ((bool)ViewBag.currentScenario)
+                return View("List", new List<datasetviewmodel>());
+
+            var currentScenario = Convert.ToInt32(this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO));
+
+            var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == currentScenario).Select(item =>
             new datasetviewmodel()
             {
                 author = item.author,
@@ -50,7 +56,14 @@ namespace discovery.Controllers
         {
             try
             {
-                this.ormProxy.dataset.Add(collection);
+                //Adding current scenario to it
+                var currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
+                if (currentScenario != null)
+                {
+                    //Current scenario must be stopped
+                    collection.scenarioid = Convert.ToInt32(currentScenario);
+                }
+                    this.ormProxy.dataset.Add(collection);
                 this.ormProxy.SaveChanges();
                 return RedirectToAction("List");
             }
