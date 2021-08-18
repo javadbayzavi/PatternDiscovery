@@ -9,6 +9,7 @@ using static discovery.Models.patternsviewmodel;
 
 namespace discovery.Models
 {
+    [Serializable]
     //This model hold the name of patterns which are applied to minining function in order to find any result
     public class resultviewmodel
     {

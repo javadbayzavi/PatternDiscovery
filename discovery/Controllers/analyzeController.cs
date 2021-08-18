@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using static discovery.Models.patternsviewmodel;
 
 namespace discovery.Controllers
 {
@@ -27,7 +28,12 @@ namespace discovery.Controllers
         public ActionResult conventional()
         {
             //Load pattern 
-            return View(this.ormProxy.patterns);
+            return View(this.ormProxy.patterns.Select(item => new patternsviewmodel 
+            { 
+                category = item.category.ToString(),
+                ID = item.ID,
+                title = item.title
+            }));
         }
 
         // POST: conventional/Analyze
@@ -35,31 +41,39 @@ namespace discovery.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult conventional(int[] id)
         {
+            var sid = Convert.ToInt32(this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO));
             try
             {
-                foreach (var pattern in id)
+                using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    //Create analyzing interface throguh factory method and inject dbcontext as a submitter to it
-                    Analyzer analyzer = AnalyzerFactory.GetConventionalAnalyzer(new ConventionalSubmitter(this.ormProxy));
+                    //Delete all previous
+                    foreach (var resultItem in this.ormProxy.result.Where(a => a.scenarioid == sid))
+                        this.ormProxy.Remove(resultItem);
 
-                    //Runing the whole analyzing process through Async process
-                    using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                    this.ormProxy.SaveChanges();
+
+                    foreach (var pattern in id)
                     {
+                        //Create analyzing interface throguh factory method and inject dbcontext as a submitter to it
+                        Analyzer analyzer = AnalyzerFactory.GetConventionalAnalyzer(new ConventionalSubmitter(this.ormProxy));
+
+                        //Runing the whole analyzing process through Async process
+
                         try
                         {
                             analyzer.Analyze(pattern.ToString());
-                            transaction.Complete();
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             return RedirectToAction("conventional");
                         }
                     }
+                    transaction.Complete();
                 }
 
                 return RedirectToAction("Index",new { controller = "result" });
             }
-            catch
+            catch (Exception ex)
             {
                 return RedirectToAction("conventional");
             }

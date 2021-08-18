@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace discovery.Models
 {
+    [Serializable]
     public class scenario
     {
         public int ID { get; set; }

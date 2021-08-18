@@ -25,6 +25,7 @@ namespace discovery.Models
         Conventional = 1,
         AIBased = 2
     }
+    [Serializable]
     public class scenarioviewmodel
     {
         public int ID { get; set; }

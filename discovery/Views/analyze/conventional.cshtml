@@ -1,4 +1,4 @@
-﻿@model IEnumerable<discovery.Models.patterns>
+﻿@model IEnumerable<discovery.Models.patternsviewmodel>
 
 <!-- DataTables -->
 <link rel="stylesheet" href="~/scripts/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -38,7 +38,6 @@
                         <tr>
                             <td></td>
                             <td>
-                                @*<input type="hidden" name="id[]" value="" />*@
                                 @Html.DisplayFor(modelItem => item.ID)
                             </td>
                             <td>
@@ -60,6 +59,7 @@
     </div>
     <!-- /.card-body -->
 </div>
+
 <!-- /.card -->
 <script src="~/scripts/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/scripts/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -75,32 +75,31 @@
 <script src="~/scripts/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <script>
     $(function () {
-       var table = $('#patterntbl').DataTable({
+       var table = $("#patterntbl").DataTable({
             'columnDefs': [{
                 'targets': 0,
                 'searchable': false,
                 'orderable': false,
                 'className': 'dt-body-center',
                 'render': function (data, type, full, meta) {
-                    //return '<input type="checkbox" name="id[]" value="' + $(this).parent().next().html() + '">';
                     return '<input type="checkbox" name="id[]" value="' + $('<td/>').text(data).html() + '">';
                 }
             }],
             "responsive": true,
             "lengthChange": false,
             "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
             "paging": true,
             "searching": true,
             "ordering": true,
             "info": true,
             'order': [[1, 'asc']],
-        }).buttons().container().appendTo('#patterntbl_wrapper .col-md-6:eq(0)');
+            "pageLength": 15,
+       });
+
 
         // Handle click on "Select all" control
         $('#pattern-select-all').on('click', function () {
             // Get all rows with search applied
-
             var rows = table.rows({ 'search': 'applied' }).nodes();
             // Check/uncheck checkboxes for all rows in the table
             $('input[type="checkbox"]', rows).prop('checked', this.checked);
@@ -108,7 +107,6 @@
 
         // Handle click on checkbox to set state of "Select all" control
         $('#patterntbl tbody').on('change', 'input[type="checkbox"]', function () {
-            $(this).val(($(this).parent().next().html()).trim());
             // If checkbox is not checked
             if (!this.checked) {
                 var el = $('#pattern-select-all').get(0);
@@ -136,7 +134,7 @@
                             $('<input>')
                                 .attr('type', 'hidden')
                                 .attr('name', this.name)
-                                .val(this.val)
+                                .val(($(this).parent().next().html()).trim())
                         );
                     }
                // }

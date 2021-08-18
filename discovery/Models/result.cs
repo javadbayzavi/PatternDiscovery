@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace discovery.Models
 {
     //This model hold the name of patterns which are applied to minining function in order to find any result
+    [Serializable]
     public class result
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

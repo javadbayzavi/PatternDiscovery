@@ -11,6 +11,11 @@ namespace discovery.Library.Core
 {
     public class BaseController : Controller
     {
+        protected int scenarioidentity 
+        { 
+            get; 
+            set; 
+        }
         //public BaseController(discoveryContext db)
         public BaseController()
         {

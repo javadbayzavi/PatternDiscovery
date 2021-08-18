@@ -18,9 +18,9 @@ namespace discovery.Library.text
             //Identify Author
             this.data.author = this.filecontent[1].Substring(this.filecontent[1].IndexOf("(") + 1, this.filecontent[1].Length - (this.filecontent[1].IndexOf("(") + 2));
             //Identify Subject
-            this.data.subject = this.filecontent[3].Substring(this.filecontent[3].IndexOf("Subject:")).Trim();
+            this.data.subject = this.filecontent[3].Substring(this.filecontent[3].IndexOf("Subject:") + ("Subject").Length + 1).Trim();
             //Indetify Date
-            this.data.date = this.filecontent[2].Substring(this.filecontent[2].IndexOf("Date:")).Trim();
+            this.data.date = this.filecontent[2].Substring(this.filecontent[2].IndexOf("Date:") + ("Date").Length + 1).Trim();
 
             //Remove document header and concate the remaining content into the body part of data
             //this.filecontent = this.filecontent.Where((source, index) => index > 6).ToArray();

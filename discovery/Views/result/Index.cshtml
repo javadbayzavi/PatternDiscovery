@@ -39,7 +39,10 @@
                             @Html.DisplayFor(modelItem => item.pattern)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.category.ToString())
+                            @{
+                                var cate = item.category.ToString();
+                            }
+                            @Html.DisplayFor(modelItem => cate)
                         </td>
                         <td>
                             <a href="~/dataset/Details/@(item.datasetid)" title="Show Details of @(item.subject)">
@@ -47,7 +50,7 @@
                             </a>
                         </td>
                         <td>
-                            <a href="~/patterns/Details/@(item.ID.ToString())" title="Review result for @(item.pattern)"><i class="fa fa-envelope-open-text" aria-hidden="true"></i></a>
+                            <a href="~/result/Details/@(item.ID.ToString())" title="Review result for @(item.pattern)"><i class="fa fa-envelope-open-text" aria-hidden="true"></i></a>
                         </td>
                     </tr>
                 }

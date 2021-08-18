@@ -94,6 +94,8 @@ namespace discovery.Controllers
                 //Read document content through template method
                 file.Read(ref item);
 
+                item.scenarioid = Convert.ToInt32(this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO));
+
                 datasets.Add(item);
 
                 //Check for memory overloads and dump the list into databse

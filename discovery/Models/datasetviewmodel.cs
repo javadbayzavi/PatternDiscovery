@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace discovery.Models
 {
+    [Serializable]
     //This model hold the information on representation matter
     public class datasetviewmodel
     {

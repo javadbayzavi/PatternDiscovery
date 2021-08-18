@@ -34,7 +34,8 @@ namespace discovery.Library.text.analyzer
             { 
                 datasetitemid = item.ID,
                 patternid = pattern.ID,
-                partofdocument = 1
+                partofdocument = 1,
+                scenarioid = item.scenarioid
             });
         }
     }
