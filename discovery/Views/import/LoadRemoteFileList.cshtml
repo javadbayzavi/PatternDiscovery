@@ -1,4 +1,27 @@
 ﻿@model List<discovery.Models.filelistview>
+@if ((bool)ViewBag.wrongtype)
+{
+    <div id="infomodal" class="modal" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Text analyzer</h5>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        The selected scenario is configured to load data from <i>@ViewBag.sourcetype</i>. Please go to scenario list for selecting appropriate scenario
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    @Html.ActionLink("Scenario List", "Index", "scenario")
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#infomodal').modal(null)
+    </script>
+}
 <div class="card">
     <div class="card-header">
         <h3> Load remote data files</h3>
@@ -12,7 +35,7 @@
                 <span class="text-info">
                     <i>
                         Default url : https://mail.python.org/pipermail/python-dev/
-                        Valid formats: txt, csv
+                        <br />Valid formats: txt, csv, gz, zip
                     </i>
                 </span>
             </div>
@@ -38,6 +61,9 @@
             <thead>
                 <tr>
                     <th>
+                        <input type="checkbox" name="select_all" value="1" id="pattern-select-all">
+                    </th>
+                    <th>
                         #
                     </th>
                     <th>
@@ -51,13 +77,14 @@
             </thead>
 
             <tbody>
-                @{ 
+                @{
                     int index = 1;
                     var files = (Model != null) ? Model.ToList() : new List<discovery.Models.filelistview>();
                 }
                 @foreach (var item in files)
                 {
                     <tr>
+                        <td></td>
                         <td>
                             @(index++)
                         </td>
@@ -82,19 +109,18 @@
     <!-- /.card-body -->
 </div>
 <!-- /.card -->
-
 @*Download form appears to hit only files fetched from remote url*@
-@if(files.Count > 0)
-{ 
-<div class="row">
-    <div class="col">
-        <form action="~/import/DownloadFiles" method="post">
-            <div class="form-group">
-                <input type="submit" value="Download All" class="form-control btn-primary" />
-            </div>
-        </form>
+@if (files.Count > 0)
+{
+    <div class="row">
+        <div class="col">
+            <form action="~/import/DownloadFiles" method="post" id="downloadfrm">
+                <div class="form-group">
+                    <input type="submit" value="Download All" class="form-control btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 }
 <script src="~/scripts/plugins/datatables/jquery.dataTables.min.js"></script>
 <script src="~/scripts/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -110,15 +136,71 @@
 <script src="~/scripts/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <script>
     $(function () {
-        $("#patterntbl").DataTable({
+        var table = $("#patterntbl").DataTable({
+            'columnDefs': [{
+                'targets': 0,
+                'searchable': false,
+                'orderable': false,
+                'className': 'dt-body-center',
+                'render': function (data, type, full, meta) {
+                    return '<input type="checkbox" name="id[]" value="' + $('<td/>').text(data).html() + '">';
+                }
+            }],
             "responsive": true,
             "lengthChange": false,
             "autoWidth": false,
-            "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
             "paging": true,
             "searching": true,
             "ordering": true,
             "info": true,
-        }).buttons().container().appendTo('#patterntbl_wrapper .col-md-6:eq(0)');
+            'order': [[1, 'asc']],
+            "pageLength": 15,
+        });
+
+
+        // Handle click on "Select all" control
+        $('#pattern-select-all').on('click', function () {
+            // Get all rows with search applied
+            var rows = table.rows({ 'search': 'applied' }).nodes();
+            // Check/uncheck checkboxes for all rows in the table
+            $('input[type="checkbox"]', rows).prop('checked', this.checked);
+        });
+
+        // Handle click on checkbox to set state of "Select all" control
+        $('#patterntbl tbody').on('change', 'input[type="checkbox"]', function () {
+            // If checkbox is not checked
+            if (!this.checked) {
+                var el = $('#pattern-select-all').get(0);
+                // If "Select all" control is checked and has 'indeterminate' property
+                if (el && el.checked && ('indeterminate' in el)) {
+                    // Set visual state of "Select all" control
+                    // as 'indeterminate'
+                    el.indeterminate = true;
+                }
+            }
+        });
+
+        // Handle form submission event
+        $('#downloadfrm').on('submit', function (e) {
+            var form = this;
+
+            // Iterate over all checkboxes in the table
+            table.$('input[type="checkbox"]').each(function () {
+                // If checkbox doesn't exist in DOM
+                // if (!$.contains(document, this)) {
+                // If checkbox is checked
+                if (this.checked) {
+                    // Create a hidden element
+                    $(form).append(
+                        $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', this.name)
+                            .val(($(this).parent().next().html()).trim())
+                    );
+                }
+                // }
+            });
+        });
     });
+
 </script>

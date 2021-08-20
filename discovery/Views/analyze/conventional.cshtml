@@ -1,9 +1,31 @@
 ﻿@model IEnumerable<discovery.Models.patternsviewmodel>
-
 <!-- DataTables -->
 <link rel="stylesheet" href="~/scripts/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
 <link rel="stylesheet" href="~/scripts/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
 <link rel="stylesheet" href="~/scripts//plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+@if((bool)ViewBag.wrongmethod)
+{
+    <div id="infomodal" class="modal" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Text analyzer</h5>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        Current scenario is planned to be analyzed using <i>AI Based</i> method. In order to run the analyze based on conventional method Select appropriate scenario from scenario list.
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    @Html.ActionLink("Scenario List", "Index", "scenario")
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#infomodal').modal(null)
+    </script>
+}
 <div class="card">
     <div class="card-header">
         <h3 class="card-title">Conventional Analyze</h3>
@@ -75,7 +97,7 @@
 <script src="~/scripts/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
 <script>
     $(function () {
-       var table = $("#patterntbl").DataTable({
+        var table = $("#patterntbl").DataTable({
             'columnDefs': [{
                 'targets': 0,
                 'searchable': false,
@@ -94,7 +116,7 @@
             "info": true,
             'order': [[1, 'asc']],
             "pageLength": 15,
-       });
+        });
 
 
         // Handle click on "Select all" control
@@ -126,18 +148,18 @@
             // Iterate over all checkboxes in the table
             table.$('input[type="checkbox"]').each(function () {
                 // If checkbox doesn't exist in DOM
-               // if (!$.contains(document, this)) {
-                    // If checkbox is checked
-                    if (this.checked) {
-                        // Create a hidden element
-                        $(form).append(
-                            $('<input>')
-                                .attr('type', 'hidden')
-                                .attr('name', this.name)
-                                .val(($(this).parent().next().html()).trim())
-                        );
-                    }
-               // }
+                // if (!$.contains(document, this)) {
+                // If checkbox is checked
+                if (this.checked) {
+                    // Create a hidden element
+                    $(form).append(
+                        $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', this.name)
+                            .val(($(this).parent().next().html()).trim())
+                    );
+                }
+                // }
             });
         });
     });

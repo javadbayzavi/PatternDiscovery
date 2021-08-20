@@ -31,6 +31,9 @@ namespace discovery.Library.Core
         public const string _SCENARIODIRECTORY = "wwwroot/temp/scenarios";
 
         public const string _CURRENTSCENARIO = "currentScenario";
+        public const string _CURRENTUSER = "currentUser";
+
+        public const string _MSG = "Message";
 
     }
 }

@@ -11,7 +11,7 @@
                     <h5 class="modal-title">Text analyzer</h5>
                 </div>
                 <div class="modal-body">
-                    <p>There is no active scenario. First refer to Scenarios and start on scenario from the list</p>
+                    <p>There is no active scenario. First refer to Scenarios and start one scenario from the list</p>
                 </div>
                 <div class="modal-footer">
                     @Html.ActionLink("Scenario List", "Index", "scenario")
@@ -21,6 +21,28 @@
     </div>
     <script>
         $('#infomodal').modal(null)
+    </script>
+}
+
+@if ((bool)ViewBag.notready)
+{
+    <div id="infomodal2" class="modal" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Text analyzer</h5>
+                </div>
+                <div class="modal-body">
+                    <p>The current scenario is not ready for analysis. Please check the current status of it in scenario list and follow the right steps.</p>
+                </div>
+                <div class="modal-footer">
+                    @Html.ActionLink("Data Perparation", "Index", "import")
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $('#infomodal2').modal(null)
     </script>
 }
 @*

@@ -16,6 +16,9 @@ namespace discovery.Controllers
 {
     public partial class scenarioController : BaseController
     {
+        public scenarioController(IHttpContextAccessor httpContextAccessor): base(httpContextAccessor)
+        {
+        }
         // GET: scenario
         public ActionResult Index()
         {
@@ -151,6 +154,17 @@ namespace discovery.Controllers
             {
                 return View();
             }
+        }
+        //Hook method for scenrio cheking
+        public override bool needScenario()
+        {
+            return false;
+        }
+
+        //Hook method for authentication cheking 
+        public override bool needAuthentication()
+        {
+            return true;
         }
     }
 }

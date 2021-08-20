@@ -1,4 +1,6 @@
-﻿@{
+﻿@model discovery.Models.scenario
+
+@{
     bool scenario = (bool)ViewBag.currentScenario;
 }
 @*Scenario checking reaction*@
@@ -11,7 +13,7 @@
                     <h5 class="modal-title">Text analyzer</h5>
                 </div>
                 <div class="modal-body">
-                    <p>There is no active scenario. First refer to Scenarios and start on scenario from the list</p>
+                    <p>There is no active scenario. First refer to Scenarios and start one scenario from the list</p>
                 </div>
                 <div class="modal-footer">
                     @Html.ActionLink("Scenario List", "Index", "scenario")
@@ -29,14 +31,17 @@
 *@
 <div class="card">
     <div class="card-header card-primary">
-        <h3> Wellcome to Import data</h3>
+        <h3> Wellcome to Import data for</h3>
+        <h4>
+            Scenario: <a href="~/scenario/Details/@Model.ID">@((Model == null)? "" : Model.name + "(" + Model.sversion.ToString() + ")")</a>
+        </h4>
     </div>
     <div class="card-body">
         <p>
             In order to load dataset in to mining scenario, the follwoing steps must be taken carefully.
         </p>
         <div class="row">
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-6 col-sm-12">
                 <div class="card h-100">
                     <div class="card-header bg-gradient-orange">
                         <b>1. Downloadling remote data</b>
@@ -52,7 +57,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-sm-12">
+            @*<div class="col-md-4 col-sm-12">
                 <div class="card h-100">
                     <div class="card-header bg-gradient-green">
                         <b>2. Normalizing Data</b>
@@ -63,15 +68,24 @@
                             In order to properly load data set, firstly we analyze donwloaded file and normalize them (e.g. decoding, unzip and formatting)
                         </p>
                     </div>
-                    <div class="card-footer card-link text-center font-weight-bold">
-                        <a href="~/import/LoadRemoteFileList">Normalize</a>
+                    @{ 
+                        var disable = "";
+                        var url = "~/import/LoadRemoteFileList";
+                    }
+                    @if (Model.status < 2)
+                    {
+                        disable = "btn disabled";
+                        url = "#";
+                    }
+                    <div class="@(disable) card-footer card-link text-center font-weight-bold">
+                        <a href="@(url)" role="button">Normalize</a>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4 col-sm-12">
+            </div>*@
+            <div class="col-md-6 col-sm-12">
                 <div class="card h-100">
                     <div class="card-header bg-gradient-blue">
-                        <b>3. Import Data</b>
+                        <b>2. Import Data</b>
                         <i class="fa fa-file-import float-right"></i>
                     </div>
                     <div class="card-body">
@@ -79,8 +93,17 @@
                             All the normalized content put into local data warehouse for later analysis.
                         </p>
                     </div>
-                    <div class="card-footer card-link text-center font-weight-bold">
-                        <a class="card-link" href="~/import/ImportData">Import</a>
+                    @{
+                       var disable = "";
+                       var url = "import/ImportData";
+                    }
+                    @if (Model.status < 2)
+                    {
+                        disable = "btn disabled";
+                        url = "#";
+                    }
+                    <div class="@(disable) card-footer card-link text-center font-weight-bold">
+                        <a class="card-link" href="@(url)">Import</a>
                     </div>
                 </div>
             </div>

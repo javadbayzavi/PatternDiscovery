@@ -1,0 +1,35 @@
+﻿<div class="card">
+    <div class="card-header">
+        <h3>
+            Import data
+        </h3>
+    </div>
+    <div class="card-body">
+        @{ 
+            int filenumebr = (int)((ViewBag.filenumbers != null) ? ViewBag.filenumbers : "0");
+        }
+        @if ((bool)ViewBag.downlaoded)
+        {
+            <h3>
+                There are <id><b>@(filenumebr.ToString())</b></id> which are downloaded for the current scenario. In order to import data from downloaded file into database hit 'Import' botton
+            </h3>
+            <form action="~/import/ImportData" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col">
+                            <input type="submit" value="Import" class="btn-primary form-control" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+        }
+        else
+        {
+            <p>
+                Unforetunately downloaded files were not founded. Import data will result in corruption. Firstly, data files must be downloaded from remote source
+                <a href="~/import/">Dowload files</a>
+            </p>
+        }
+    </div>
+</div>

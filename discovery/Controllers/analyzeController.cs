@@ -16,17 +16,35 @@ namespace discovery.Controllers
 {
     public class analyzeController : BaseController
     {
-        // GET: conventional
+        public analyzeController(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        {
+        }
+
+        // GET: analyze
         public ActionResult Index()
         {
             //Scenario Checking
-            ViewBag.currentScenario = (this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == null || this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == "");
+            ViewBag.currentScenario = false;
+            ViewBag.notready = false;
+
+            if (this.currentScenario < 1)
+            {
+                ViewBag.currentScenario = true;
+                return View();
+            }
+
+            ViewBag.notready = (this.getCurrentScenario().status < (int)scenariostatus.Importted);
+
             return View();
         }
 
-        // GET: conventional/Analyze
+        // GET: analyze/conventional
         public ActionResult conventional()
         {
+            ViewBag.wrongmethod = (this.getCurrentScenario().method == (int)scenarionmethod.AIBased);
+            if ((bool)ViewBag.wrongmethod)
+                return View(new List<patternsviewmodel>());
+
             //Load pattern 
             return View(this.ormProxy.patterns.Select(item => new patternsviewmodel 
             { 
@@ -36,12 +54,12 @@ namespace discovery.Controllers
             }));
         }
 
-        // POST: conventional/Analyze
+        // POST: analyze/conventional
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult conventional(int[] id)
         {
-            var sid = Convert.ToInt32(this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO));
+            var sid = Convert.ToInt32(this._session.GetString(Keys._CURRENTSCENARIO));
             try
             {
                 using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
@@ -65,18 +83,42 @@ namespace discovery.Controllers
                         }
                         catch (Exception ex)
                         {
+                            this._session.SetString(Keys._MSG, "Analyzing process has failed for. Please restart the process");
                             return RedirectToAction("conventional");
                         }
                     }
+                    //Update the current scenario status
+                    var scen = getCurrentScenario();
+                    //Set the status to downloaded
+                    scen.status = (int)scenariostatus.Analyzed;
+                    this.ormProxy.scenario.Update(scen);
+
+                    this.ormProxy.SaveChanges();
+
                     transaction.Complete();
                 }
+
+                this._session.SetString(Keys._MSG, "Analyzing completed!");
 
                 return RedirectToAction("Index",new { controller = "result" });
             }
             catch (Exception ex)
             {
+                this._session.SetString(Keys._MSG, "Analyzing process internal error");
                 return RedirectToAction("conventional");
             }
+        }
+
+        //Hook method for scenrio cheking
+        public override bool needScenario()
+        {
+            return true;
+        }
+
+        //Hook method for authentication cheking 
+        public override bool needAuthentication()
+        {
+            return true;
         }
     }
 }

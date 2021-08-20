@@ -16,6 +16,10 @@ namespace discovery.Controllers
 {
     public partial class datasetController : BaseController
     {
+        public datasetController(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        {
+        }
+
         // GET: dataset/Index
         public ActionResult Index()
         {
@@ -28,9 +32,9 @@ namespace discovery.Controllers
             if ((bool)ViewBag.currentScenario)
                 return View("List", new List<datasetviewmodel>());
 
-            var currentScenario = Convert.ToInt32(this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO));
+            ViewBag.scenario = this.getCurrentScenario();
 
-            var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == currentScenario).Select(item =>
+            var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == this.currentScenario).Select(item =>
             new datasetviewmodel()
             {
                 author = item.author,
@@ -56,14 +60,9 @@ namespace discovery.Controllers
         {
             try
             {
-                //Adding current scenario to it
-                var currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
-                if (currentScenario != null)
-                {
-                    //Current scenario must be stopped
-                    collection.scenarioid = Convert.ToInt32(currentScenario);
-                }
-                    this.ormProxy.dataset.Add(collection);
+                //Current scenario must be stopped
+                collection.scenarioid = Convert.ToInt32(this.currentScenario);
+                this.ormProxy.dataset.Add(collection);
                 this.ormProxy.SaveChanges();
                 return RedirectToAction("List");
             }
@@ -117,6 +116,17 @@ namespace discovery.Controllers
             {
                 return View();
             }
+        }
+        //Hook method for scenrio cheking
+        public override bool needScenario()
+        {
+            return true;
+        }
+
+        //Hook method for authentication cheking 
+        public override bool needAuthentication()
+        {
+            return true;
         }
     }
 }

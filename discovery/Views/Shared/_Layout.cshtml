@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -71,7 +73,6 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-
             <!-- Sidebar -->
             <div class="sidebar">
                 <!-- Sidebar user (optional) -->
@@ -97,7 +98,7 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
-    with font-awesome or any other icon font library -->
+                        with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <a href="~/Home" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
@@ -169,27 +170,39 @@
                                         <p>Start</p>
                                     </a>
                                 </li>
-                                <li class="nav-item">
-                                    <a href="~/analyze/conventional" class="nav-link">
-                                        <i class="fa fa-industry" aria-hidden="true"></i>
-                                        <p>Conventional</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="~/analyze/ai" class="nav-link">
-                                        <i class="fa fa-robot" aria-hidden="true"></i>
-                                        <p>AI Based</p>
-                                    </a>
-                                </li>
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a href="~/result" class="nav-link">
+                            <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-chart-pie"></i>
                                 <p>
-                                    Results
+                                    Result
+                                    <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/result/overview" class="nav-link">
+                                        <p>
+                                            Overview
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/result" class="nav-link">
+                                        <p>
+                                            Details
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/result/charts" class="nav-link">
+                                        <p>
+                                            Charts
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </nav>
@@ -226,6 +239,20 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
+                    @{ 
+                        string msg = Context.Session.GetString(discovery.Library.Core.Keys._MSG);
+                    }
+                    @if( msg != null && msg != "")
+                    {
+                        //Reset message after presentation
+                        Context.Session.SetString(discovery.Library.Core.Keys._MSG, "");
+                        <div class="alert alert-info alert-dismissible fade show" role="alert">
+                            <strong>Text Miner</strong> @(msg).
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
                     <div class="row">
                         <div class="col-12">
                             @RenderBody()

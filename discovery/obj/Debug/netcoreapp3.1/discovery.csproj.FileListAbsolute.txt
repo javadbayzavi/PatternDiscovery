@@ -420,3 +420,5 @@ E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Creat
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Details.cshtml.g.cs
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Edit.cshtml.g.cs
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Index.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\result\charts.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\import\ImportData.cshtml.g.cs

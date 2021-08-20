@@ -10,6 +10,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace discovery
 {
     public class Startup
@@ -22,6 +24,7 @@ namespace discovery
         {
             services.AddControllersWithViews();
             services.AddSession();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         public Startup(IConfiguration config)

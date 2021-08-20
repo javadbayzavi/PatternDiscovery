@@ -17,49 +17,86 @@ namespace discovery.Controllers
     public partial class importController : BaseController
     {
         private List<IReadable> documents = new List<IReadable>();
+        public importController(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        {
+        }
+
         // GET: import
         public ActionResult Index()
         {
             //Scenario Checking
-            ViewBag.currentScenario = (this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == null || this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == "");
-
-
-            string url = this.HttpContext.Session.GetString(Keys._REMOTEURL);
-            if(System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Length > 0 && url != null)
+            ViewBag.currentScenario = false;
+            if (this.currentScenario < 1)
             {
-                //latest versions of raw file has downloaded
+                ViewBag.currentScenario = true;
+                return View(new scenario());
+            }
 
-            }
-            {
-                //donwloaded files must be replaced with new version from the remote url
-            }
-            return View();
+
+                //Show the status of the current scenario
+                string url = this._session.GetString(Keys._REMOTEURL);
+
+            return View(this.getCurrentScenario());
         }
 
         // post: import/DownloadFiles
         [HttpPost]
-        public ActionResult DownloadFiles()
+        public ActionResult DownloadFiles(int[] id)
         {
-            string url = this.HttpContext.Session.GetString(Keys._REMOTEURL);
-            var downlaoded = Fileoperations.downloadFiles(ref url);
+            string url = this._session.GetString(Keys._REMOTEURL);
+            //Log the download vesion for the scenario
+            Fileoperations.WriteTofile(Keys._SCENARIODIRECTORY + "/" + getCurrentScenario().sversion.ToString() + ".txt", url);
+
+            var version = getCurrentScenario().sversion.ToString();
+
+            var downlaoded = Fileoperations.downloadFiles(ref id , version);
             if (downlaoded)
             {
                 //After successfully downloading all remote files session address sets to null that shows the operation can run from the start again
-                this.HttpContext.Session.SetString(Keys._REMOTEURL, "");
-                return RedirectToAction("Index");
+                this._session.SetString(Keys._REMOTEURL, "");
+
+                //Update the current scenario status
+                var scen = getCurrentScenario();
+                //Set the status to downloaded
+                scen.status = (int)scenariostatus.Downloaded;
+                scen.datasource = url;
+                this.ormProxy.scenario.Update(scen);
+                this.ormProxy.SaveChanges();
+
+                this._session.SetString(Keys._MSG, "All Selected files have downloaded");
+
+                return RedirectToAction(nameof(Index));
             }
             else
+            {
+                this._session.SetString(Keys._MSG, "File donwload failed");
                 return RedirectToAction("LoadRemoteFileList");
+            }
         }
+
+        //GET: import/LoadRemoteFileList
         public ActionResult LoadRemoteFileList()
         {
+            ViewBag.wrongtype = false;
+            var item = getCurrentScenario();
+            ViewBag.sourcetype = ((scenariosourcetype)item.sourcetype).ToString();
+            if (item.sourcetype != (int)scenariosourcetype.File)
+                ViewBag.wrongtype = true;
+
             return View();
         }
+
         //POST: import/LoadRemoteFileList
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LoadRemoteFileList(string url)
         {
+            ViewBag.wrongtype = false;
+            var item = getCurrentScenario();
+            ViewBag.sourcetype = ((scenariosourcetype)item.sourcetype).ToString();
+            if (item.sourcetype != (int)scenariosourcetype.File)
+                ViewBag.wrongtype = true; 
+            
             try
             {
                 var files = Fileoperations.getFileList(ref url).Select(a =>
@@ -69,7 +106,7 @@ namespace discovery.Controllers
                             fileurl = a.fileurl
                         }
                     ).ToList();
-                this.HttpContext.Session.SetString(Keys._REMOTEURL,url);
+                this._session.SetString(Keys._REMOTEURL,url);
                 return View(files);
             }
             catch(Exception ex)
@@ -77,10 +114,25 @@ namespace discovery.Controllers
                 return View();
             }
         }
-
-        // GET: import/ImportData/
         public ActionResult ImportData()
         {
+            ViewBag.downlaoded = true;
+            if (getCurrentScenario().status < (int) scenariostatus.Downloaded)
+                ViewBag.downlaoded = false;
+            //Number of files downloaded for this scenario
+            ViewBag.filenumbers = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.currentScenario.ToString())).Count();
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        // GET: import/ImportData/
+        public ActionResult ImportData(string version)
+        {
+            //Check if the user want to import data for scenario that has no downloaded file
+
+
             //Use factory method to create appropriate file document based on downloaded file in temp directory
             var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Select(a =>
                 new filefactory(a).createData()
@@ -94,7 +146,7 @@ namespace discovery.Controllers
                 //Read document content through template method
                 file.Read(ref item);
 
-                item.scenarioid = Convert.ToInt32(this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO));
+                item.scenarioid = this.currentScenario;
 
                 datasets.Add(item);
 
@@ -111,15 +163,30 @@ namespace discovery.Controllers
 
             //import remaining data into database
             this.ormProxy.dataset.AddRange(datasets);
+
+            //Update the current scenario status
+            var scen = getCurrentScenario();
+            //Set the status to downloaded
+            scen.status = (int)scenariostatus.Importted;
+            this.ormProxy.scenario.Update(scen);
+
             this.ormProxy.SaveChanges();
 
-            return RedirectToAction("Index");
+            this._session.SetString(Keys._MSG, "Data Import Successfully Done!");
+
+            return RedirectToAction(nameof(Index));
         }
 
-        private scenario getCurrentScenario()
+        //Hook method for scenrio cheking
+        public override bool needScenario()
         {
-            var currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
-            return this.ormProxy.scenario.FirstOrDefault();
+            return true;
+        }
+
+        //Hook method for authentication cheking 
+        public override bool needAuthentication()
+        {
+            return true;
         }
     }
 }

@@ -13,6 +13,10 @@ namespace discovery.Controllers
 {
     public class patternsController : BaseController
     {
+        public patternsController(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        {
+        }
+
         // GET: patterns
         public ActionResult Index()
         {
@@ -92,6 +96,17 @@ namespace discovery.Controllers
             {
                 return View();
             }
+        }
+        //Hook method for scenrio cheking
+        public override bool needScenario()
+        {
+            return false;
+        }
+
+        //Hook method for authentication cheking 
+        public override bool needAuthentication()
+        {
+            return true;
         }
     }
 }

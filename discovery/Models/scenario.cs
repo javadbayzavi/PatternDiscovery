@@ -22,5 +22,7 @@ namespace discovery.Models
 
         //Analyzing method (Conventional = 1, AI Based = 2)
         public int method { get; set; }
+        public int userID { get; set; }
+        public user user { get; set; }
     }
 }
