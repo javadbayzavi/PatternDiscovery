@@ -70,13 +70,16 @@ namespace discovery.Controllers
             _httpContextAccessor = httpContextAccessor;
             this._dbproxy = new discoveryContext();
         }
+
+
         [HttpGet("getPatternRanking")]
         public object getPatternRanking()
         {
             var res = this.ormProxy.result
                 .Where(item => item.scenarioid == this.currentScenario)
                 .Include(a => a.pattern).ToList()
-                .GroupBy(a => a.patternid).Select(outputItem => new patternrankingviewmodel()
+                .GroupBy(a => a.patternid)
+                .Select(outputItem => new patternrankingviewmodel()
                 { 
                     count = outputItem.Count(),
                     pattern = outputItem.FirstOrDefault().pattern.title
@@ -84,26 +87,46 @@ namespace discovery.Controllers
 
             return res;
         }
+
         [HttpGet("getCategoryRanking")]
-        public JsonResult getCategoryRanking()
+        public object getCategoryRanking()
         {
-            return null;
+            var res = this.ormProxy.result
+                .Where(item => item.scenarioid == this.currentScenario)
+                .Include(a => a.pattern).ToList()
+                .GroupBy(a => a.pattern.category)
+                .Select(a => new categoryrankingviewmodel()
+                {
+                    category = ((patternsviewmodel.categories)a.First().pattern.category).ToString(),
+                    count = a.Count()
+                });
+
+            return res;
         }
 
         [HttpGet("getAuthorInterests")]
-        public JsonResult getAuthorInterests()
+        public object getAuthorInterests()
         {
+            var res = this.ormProxy.result
+                .Where(item => item.scenarioid == this.currentScenario)
+                .Include(a => a.datasetItem).ToList()
+                .GroupBy(a => a.datasetItem.author)
+                .Select(a => new authorrankingviewmodel()
+                {
+                    author = a.First().datasetItem.author,
+                    count = a.Count()
+                });
             return null;
         }
 
         [HttpGet("getPatternRankinCategory")]
-        public JsonResult getPatternRankinCategory(int categoryId)
+        public object getPatternRankinCategory(int categoryId)
         {
             return null;
         }
 
         [HttpGet("getYearlyTimeline")]
-        public JsonResult getYearlyTimeline()
+        public object getYearlyTimeline()
         {
             //Show the usage of pattern with the caluse of grouping by year
             return null;

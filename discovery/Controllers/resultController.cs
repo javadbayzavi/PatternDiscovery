@@ -39,7 +39,8 @@ namespace discovery.Controllers
                 datasetid = item.datasetitemid,
                 category = (categories)item.pattern.category,
                 patternid = item.patternid,
-                pattern = item.pattern.title               
+                pattern = item.pattern.title ,
+                count = item.count
             });
             return View(results);
         }

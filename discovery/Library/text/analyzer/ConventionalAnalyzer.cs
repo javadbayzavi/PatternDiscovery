@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace discovery.Library.text.analyzer
@@ -29,14 +30,15 @@ namespace discovery.Library.text.analyzer
 
             //Do Conventional text analyze on database engine
             this.results = this._submitter.context.dataset.Where(a =>
-            a.body.Contains(pattern.title) == true
-            ).Select(item => new Models.result 
-            { 
+            a.body.Contains(pattern.title.ToLower()) == true
+            ).Select(item => new Models.result
+            {
+                count = Regex.Matches(item.body, pattern.title.ToLower(),RegexOptions.IgnoreCase).Count,
                 datasetitemid = item.ID,
                 patternid = pattern.ID,
                 partofdocument = 1,
                 scenarioid = item.scenarioid
-            });
+            }); ;
         }
     }
 }

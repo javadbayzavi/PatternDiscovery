@@ -24,5 +24,7 @@ namespace discovery.Models
 
         public int patternid { get; set; }
         public int datasetid { get; set; }
+
+        public int count { get; set; }
     }
 }

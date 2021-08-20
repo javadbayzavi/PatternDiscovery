@@ -52,6 +52,9 @@
                     <th>
                         Subject
                     </th>
+                    <th>
+                        Count
+                    </th>
                     <th></th>
                 </tr>
             </thead>
@@ -76,6 +79,9 @@
                             <a href="~/dataset/Details/@(item.datasetid)" title="Show Details of @(item.subject)">
                                 @Html.DisplayFor(modelItem => item.subject)
                             </a>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.count)
                         </td>
                         <td>
                             <a href="~/result/Details/@(item.ID.ToString())" title="Review result for @(item.pattern)"><i class="fa fa-envelope-open-text" aria-hidden="true"></i></a>
