@@ -47,6 +47,13 @@ namespace discovery.Controllers
 
         public IActionResult charts()
         {
+            //Scenario Checking
+            ViewBag.currentScenario = false;
+            if (this.currentScenario < 1)
+            {
+                ViewBag.currentScenario = true;
+            }
+
             return View();
         }
         public IActionResult overview()

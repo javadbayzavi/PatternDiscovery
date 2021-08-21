@@ -1,0 +1,76 @@
+﻿<div class="card card-indigo h-100">
+    <div class="card-header">
+        <h3 class="card-title">Patterns finding %</h3>
+
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        @Html.DropDownList("categories", discovery.Models.patternsviewmodel.getCategories(), "Select on of the following categories", new { @class = "formm-control" })
+        <canvas id="pieWholePatternInCategoryChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+    </div>
+    <!-- /.card-body -->
+</div>
+<script>
+    function drawCategoryPercentPatternChart(chartData) {
+        var barLabels = [];
+        var barData = [];
+        barData.push(chartData["covered"]);
+        barData.push(chartData["notcovered"]);
+        barLabels.push('Used Pattern');
+        barLabels.push('Not-used Pattern');
+        //-------------
+        //- PIE CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var donutData = {
+            labels: barLabels,
+            datasets: [
+                {
+                    data: barData,
+                    backgroundColor: ['#d2d6de', '#d9a3de'],
+                }
+            ]
+        }
+
+        var pieChartCanvas = $('#pieWholePatternInCategoryChart').get(0).getContext('2d')
+        var pieData = donutData;
+        var pieOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+        }
+
+        new Chart(pieChartCanvas, {
+            type: 'pie',
+            data: pieData,
+            options: pieOptions
+        });
+
+    }
+    ;
+
+    //loadChart();
+
+    function loadChart(id) {
+        $.ajax({
+            type: "GET",
+            url: '/api/chart/percentageOfPatternsInCategory/' + id,
+            contentType: "application/json",
+            dataType: "json",
+            success: function (chData) {
+                drawCategoryPercentPatternChart(chData);
+            }
+        });
+    }
+
+    $('#categories').change(function () {
+        if(this.value)
+            loadChart(this.value);
+    });
+</script>

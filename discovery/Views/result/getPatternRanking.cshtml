@@ -1,0 +1,80 @@
+﻿<div class="card card-blue h-100">
+    <div class="card-header">
+        <h3 class="card-title">Ranking of founded patterns</h3>
+
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+    </div>
+    <!-- /.card-body -->
+</div>
+<script>
+    function drawPatternChart(chartData) {
+        var barLabels = [];
+        var barData = [];
+
+        for (let index = 0; index < chartData.length; index++) {
+            //Caculation of others
+            if (index > 5) {
+                if (index == 6) {
+                    barLabels.push("Others");
+                    barData.push(chartData[index].count);
+                }
+                else
+                    barData[6] += chartData[index].count;
+            }
+            else {
+                barLabels.push(chartData[index].pattern);
+                barData.push(chartData[index].count);
+            }
+        }
+
+        //-------------
+        //- PIE CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var donutData = {
+            labels: barLabels,
+            datasets: [
+                {
+                    data: barData,
+                    backgroundColor: ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#d9a3de'],
+                }
+            ]
+        }
+
+        var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+        var pieData = donutData;
+        var pieOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+        }
+
+        new Chart(pieChartCanvas, {
+            type: 'doughnut',
+            data: pieData,
+            options: pieOptions
+        });
+
+    }
+
+    $.ajax({
+        type: "GET",
+        url: '/api/chart/getPatternRanking',
+        contentType: "application/json",
+        dataType: "json",
+        success: function (chData) {
+            drawPatternChart(chData)
+        }
+    });
+
+
+</script>

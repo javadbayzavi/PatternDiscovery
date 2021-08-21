@@ -1,0 +1,26 @@
+﻿@{ 
+    bool hasdata = (bool)ViewBag.hadData;
+    bool hasfiles = (bool)ViewBag.hasFiles;
+}
+<div class="card">
+    <div class="card-header">
+        Delete confirmation
+    </div>
+    <div class="card-body">
+        Ary you sure to delete the selected scenario?
+        @if (hasdata)
+        {
+            <h3>Th senario has some datasets for active scenario, as well</h3>
+        }
+        @if (hasfiles)
+        {
+            <h3>Th senario has some data files for active scenario, as well</h3>
+        }
+        <form action="~/scenario/Delete" method="post">
+            @Html.AntiForgeryToken()
+            <input type="submit" value="Delete" class="btn-primary" />
+            <input type="hidden" name="id" value="@ViewBag.id" />
+            <input type="button" value="Cancel" class="btn-secondary" role="link" onclick="window.location.href='../../scenario/'" />
+        </form>
+    </div>
+</div>

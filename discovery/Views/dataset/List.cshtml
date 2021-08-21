@@ -74,7 +74,13 @@
                             @Html.DisplayFor(modelItem => item.author)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.date)
+                            @{ 
+                                var regexpr = new System.Text.RegularExpressions.Regex(discovery.Library.Core.Keys._DATEREGEXPRESSION);
+                                var year = (regexpr.Match(item.date).Success)? regexpr.Match(item.date).Value : "0";
+                                if (year != "0")
+                                    year = DateTime.Parse(year).Year.ToString();
+                            }
+                            @Html.DisplayFor(modelItem => item.date) - (@(year))
                         </td>
                         <td>
                             <a href="~/dataset/Edit/@(item.ID.ToString())" title="Edit @(item.subject)"><i class="fa fa-edit" aria-hidden="true"></i></a>

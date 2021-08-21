@@ -1,0 +1,85 @@
+﻿<div class="card card-blue h-100">
+    <div class="card-header">
+        <h3 class="card-title">Authors who interested in patterns</h3>
+
+        <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-tool" data-card-widget="remove">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body">
+        <canvas id="barAuthorsInterestPatternChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+    </div>
+    <!-- /.card-body -->
+</div>
+<script>
+    function drawAuthorInterestChart(chartData) {
+        var barLabels = [];
+        var barData = [];
+
+        for (let index = 0; index < chartData.length; index++) {
+            //Caculation of others
+            //if (index > 9) {
+            //    if (index == 10) {
+            //        barLabels.push("Others");
+            //        barData.push(chartData[index].count);
+            //    }
+            //    else
+            //        barData[10] += chartData[index].count;
+            //}
+            //else {
+                barLabels.push(chartData[index].author);
+                barData.push(chartData[index].count);
+            //}
+        }
+
+        var Data = {
+            labels: barLabels,
+            datasets: [
+                {
+                    label: 'Authors',
+                    backgroundColor: 'rgba(60,141,188,0.9)',
+                    borderColor: 'rgba(60,141,188,0.8)',
+                    pointRadius: true,
+                    pointColor: '#3b8bba',
+                    pointStrokeColor: 'rgba(60,141,188,1)',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                    data: barData
+                },
+            ]
+        }
+
+        var barChartCanvas = $('#barAuthorsInterestPatternChart').get(0).getContext('2d')
+        var barChartData = $.extend(true, {}, Data);
+            barChartData.datasets[0] = Data.datasets[0];
+        var barOptions = {
+            maintainAspectRatio: false,
+            responsive: true,
+            datasetFill : false,
+        }
+
+        new Chart(barChartCanvas, {
+            type: 'bar',
+            data: barChartData,
+            options: barOptions
+        });
+
+    }
+
+    $.ajax({
+        type: "GET",
+        url: '/api/chart/getAuthorInterested',
+        contentType: "application/json",
+        dataType: "json",
+        success: function (chData) {
+            drawAuthorInterestChart(chData)
+        }
+    });
+
+
+</script>

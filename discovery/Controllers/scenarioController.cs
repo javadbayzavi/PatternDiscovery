@@ -36,17 +36,53 @@ namespace discovery.Controllers
             // category models from a hook method
             return View(scenarios);
         }
+        public ActionResult Reset(int id)
+        {
+            ViewBag.hadData = (this.ormProxy.dataset.Count(a => a.scenarioid == this.currentScenario) > 0);
+            ViewBag.hasFiles = (System.IO.Directory.GetFiles(Keys._SCENARIODIRECTORY).Count(a => a.Contains(this.ormProxy.scenario.Where(bb => bb.ID == id).First().sversion.ToString())) > 0);
+
+            return View();
+        }
+        
+        [HttpPost]
+        [ActionName("Reset")]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetConfirmed(int id)
+        {
+            var results = this.ormProxy.result.Where(a => a.scenarioid == id);
+            var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == id);
+
+            if (System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt"))
+                System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt");
+
+            var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.getCurrentScenario().sversion.ToString()));
+            foreach (var itt in files)
+            {
+                if (System.IO.File.Exists(Keys._TEMPDIRECTORY + itt))
+                    System.IO.File.Delete(Keys._TEMPDIRECTORY + itt);
+            }
+
+            this.ormProxy.dataset.RemoveRange(datasets);
+            this.ormProxy.result.RemoveRange(results);
+
+            this.ormProxy.SaveChanges();
+            this._session.SetString(Keys._MSG,"Scenario has successfully been reset");
+            return RedirectToAction(nameof(Index));
+        }
+
         public ActionResult Start(int id)
         {
-            var currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
+            var currentScenario = this._session.GetString(Keys._CURRENTSCENARIO);
             if (currentScenario != null && currentScenario == id.ToString())
             {
                 //Current scenario must be stopped
-                this.HttpContext.Session.SetString(Keys._CURRENTSCENARIO, "");
+                this._session.SetString(Keys._CURRENTSCENARIO, "");
+                this._session.SetString(Keys._MSG, "Scneario has successfully Stopped");
             }
             else
             {
-                this.HttpContext.Session.SetString(Keys._CURRENTSCENARIO, id.ToString());
+                this._session.SetString(Keys._CURRENTSCENARIO, id.ToString());
+                this._session.SetString(Keys._MSG, "Scneario has successfully Started");
             }
             return RedirectToAction("Index");
         }
@@ -131,17 +167,38 @@ namespace discovery.Controllers
             return View(item);
         }
 
-        // GET: scenario/Delete/5
-        public ActionResult Delete(int id)
+        // POST: scenario/Delete/5
+        [HttpPost]
+        [ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
         {
             try
             {
+                var results = this.ormProxy.result.Where(a => a.scenarioid == id);
+                var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == id);
+                if(System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt"))
+                    System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt");
+
+                var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.getCurrentScenario().sversion.ToString()));
+                foreach (var itt in files)
+                {
+                    if(System.IO.File.Exists(Keys._TEMPDIRECTORY + itt))
+                        System.IO.File.Delete(Keys._TEMPDIRECTORY + itt);
+                }
+
+                this.ormProxy.dataset.RemoveRange(datasets);
+                this.ormProxy.result.RemoveRange(results);
+
+                this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, "Scenario has successfully been deleted");
+
                 var item = this.ormProxy.scenario.FirstOrDefault(a => a.ID == id);
                 this.ormProxy.scenario.Remove(item);
                 this.ormProxy.SaveChanges();
 
                 //Check whether if current scenario is active. it must be stopped
-                var currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
+                var currentScenario = this._session.GetString(Keys._CURRENTSCENARIO);
                 if (currentScenario != null && currentScenario == id.ToString())
                 {
                     //Current scenario must be stopped
@@ -155,6 +212,22 @@ namespace discovery.Controllers
                 return View();
             }
         }
+
+        // POST: scenario/Delete/5
+        public ActionResult Delete(int id)
+        {
+            ViewBag.hadData = (this.ormProxy.dataset.Count(a => a.scenarioid == this.currentScenario) > 0);
+            ViewBag.hasFiles = (System.IO.Directory.GetFiles(Keys._SCENARIODIRECTORY).Count(a => a.Contains(this.ormProxy.scenario.Where(bb => bb.ID == id).First().sversion.ToString())) > 0);
+            ViewBag.id = id;
+
+            return View();
+        }
+
+        private scenario GetScenario(int id)
+        {
+            return this.ormProxy.scenario.Find(id);
+        }
+
         //Hook method for scenrio cheking
         public override bool needScenario()
         {

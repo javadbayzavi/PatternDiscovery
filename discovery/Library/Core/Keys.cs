@@ -35,5 +35,8 @@ namespace discovery.Library.Core
 
         public const string _MSG = "Message";
 
+        public const string _DATEREGEXPRESSION = "(?:\\d|\\d{2}) \\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May?|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?) (?:19[7-9]\\d|2\\d{3})(?=\\D|$)";
+        public const string _MONTHREGEXPRESSION = "\\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May?|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+
     }
 }

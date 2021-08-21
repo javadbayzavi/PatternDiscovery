@@ -183,3 +183,14 @@ E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\discovery.dll
 E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\discovery.pdb
 E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\discovery.genruntimeconfig.cache
 E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\import\ImportData.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\getAuthorInterestPatterns.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\getCategoryRanking.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\getMonthlyPatterns.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\getMostDiverseSubject.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\getPatternRanking.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\getRankofPatternsInCategory.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\getYearlyPatterns.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\percentageOfCategoryPattern.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\result\percentageOfWholePatterns.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\scenario\Delete.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Release\netcoreapp3.1\Razor\Views\scenario\Reset.cshtml.g.cs
