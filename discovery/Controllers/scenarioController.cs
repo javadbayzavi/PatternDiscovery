@@ -22,8 +22,9 @@ namespace discovery.Controllers
         // GET: scenario
         public ActionResult Index()
         {
-            ViewBag.currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
+            this.setPageTitle("Index");
 
+            ViewBag.currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
             var scenarios = this.ormProxy.scenario.Select(item => new scenarioviewmodel()
             {
                 createddate = item.createddate,
@@ -38,6 +39,8 @@ namespace discovery.Controllers
         }
         public ActionResult Reset(int id)
         {
+            this.setPageTitle("Reset");
+
             ViewBag.hadData = (this.ormProxy.dataset.Count(a => a.scenarioid == this.currentScenario) > 0);
             ViewBag.hasFiles = (System.IO.Directory.GetFiles(Keys._SCENARIODIRECTORY).Count(a => a.Contains(this.ormProxy.scenario.Where(bb => bb.ID == id).First().sversion.ToString())) > 0);
 
@@ -55,15 +58,22 @@ namespace discovery.Controllers
             if (System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt"))
                 System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt");
 
-            var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.getCurrentScenario().sversion.ToString()));
+            string filename = GetScenario(id).sversion.ToString();
+            var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(filename));
+
             foreach (var itt in files)
             {
-                if (System.IO.File.Exists(Keys._TEMPDIRECTORY + itt))
-                    System.IO.File.Delete(Keys._TEMPDIRECTORY + itt);
+                if (System.IO.File.Exists(itt))
+                    System.IO.File.Delete(itt);
             }
 
             this.ormProxy.dataset.RemoveRange(datasets);
             this.ormProxy.result.RemoveRange(results);
+            var scenario = this.GetScenario(id);
+
+            //Reset the status of the scenario
+            scenario.status = (int)scenariostatus.Created;
+            this.ormProxy.scenario.Update(scenario);
 
             this.ormProxy.SaveChanges();
             this._session.SetString(Keys._MSG,"Scenario has successfully been reset");
@@ -89,6 +99,8 @@ namespace discovery.Controllers
         // GET: scenario/Create
         public ActionResult Create()
         {
+            this.setPageTitle("Create");
+
             //Load necessary dropdowns
             ViewBag.sourcetype = new SelectList(scenarioviewmodel.getTypes(), "Value", "Text");            
             ViewBag.method = new SelectList(scenarioviewmodel.getMethods(), "Value", "Text"); 
@@ -121,6 +133,8 @@ namespace discovery.Controllers
         // GET: scenario/Edit/5
         public ActionResult Edit(int id)
         {
+            this.setPageTitle("Edit");
+
             var item = this.ormProxy.scenario.First(a => a.ID == id);
             //Load necessary dropdowns
             ViewBag.sourcetype = new SelectList(scenarioviewmodel.getTypes(), "Value", "Text",item.sourcetype);
@@ -153,6 +167,8 @@ namespace discovery.Controllers
         // GET: scenario/Details/5
         public ActionResult Details(int id)
         {
+            this.setPageTitle("Details");
+
             var item = this.ormProxy.scenario.Where(a => a.ID == id).Select(a => new scenarioviewmodel
             {
                 createddate = a.createddate,
@@ -180,11 +196,13 @@ namespace discovery.Controllers
                 if(System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt"))
                     System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt");
 
-                var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.getCurrentScenario().sversion.ToString()));
+                string filename = GetScenario(id).sversion.ToString();
+                var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(filename));
+
                 foreach (var itt in files)
                 {
-                    if(System.IO.File.Exists(Keys._TEMPDIRECTORY + itt))
-                        System.IO.File.Delete(Keys._TEMPDIRECTORY + itt);
+                    if(System.IO.File.Exists(itt))
+                        System.IO.File.Delete(itt);
                 }
 
                 this.ormProxy.dataset.RemoveRange(datasets);
@@ -202,7 +220,7 @@ namespace discovery.Controllers
                 if (currentScenario != null && currentScenario == id.ToString())
                 {
                     //Current scenario must be stopped
-                    this.HttpContext.Session.SetString(Keys._CURRENTSCENARIO, "");
+                    this._session.SetString(Keys._CURRENTSCENARIO, "");
                 }
 
                     return RedirectToAction(nameof(Index));
@@ -216,6 +234,8 @@ namespace discovery.Controllers
         // POST: scenario/Delete/5
         public ActionResult Delete(int id)
         {
+            this.setPageTitle("Delete");
+
             ViewBag.hadData = (this.ormProxy.dataset.Count(a => a.scenarioid == this.currentScenario) > 0);
             ViewBag.hasFiles = (System.IO.Directory.GetFiles(Keys._SCENARIODIRECTORY).Count(a => a.Contains(this.ormProxy.scenario.Where(bb => bb.ID == id).First().sversion.ToString())) > 0);
             ViewBag.id = id;
@@ -238,6 +258,38 @@ namespace discovery.Controllers
         public override bool needAuthentication()
         {
             return true;
+        }
+        //template method for setting the title of each page
+        public override void setPageTitle(string actionRequester)
+        {
+            string _pageTitle = "";
+
+            switch (actionRequester)
+            {
+                case "Index":
+                    _pageTitle = "Scenario Management";
+                    break;
+                case "Create":
+                    _pageTitle = "Create Scenario";
+                    break;
+                case "Edit":
+                    _pageTitle = "Edit Scenario";
+                    break;
+                case "Delete":
+                    _pageTitle = "Delete Scenario";
+                    break;
+                case "Reset":
+                    _pageTitle = "Reset Scenario";
+                    break;
+                case "Details":
+                    _pageTitle = "View Scenario Details";
+                    break;
+                default:
+                    _pageTitle = "Scenario Management";
+                    break;
+            }
+
+            ViewBag.Title = _pageTitle;
         }
     }
 }

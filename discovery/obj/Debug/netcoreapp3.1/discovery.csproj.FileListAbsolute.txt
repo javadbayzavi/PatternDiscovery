@@ -433,3 +433,5 @@ E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\result\getMont
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\result\getMostDiverseSubject.cshtml.g.cs
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Delete.cshtml.g.cs
 E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\scenario\Reset.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\analyze\ai.cshtml.g.cs
+E:\PatternDiscovery\discovery\obj\Debug\netcoreapp3.1\Razor\Views\result\List.cshtml.g.cs

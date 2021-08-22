@@ -1,5 +1,181 @@
-﻿
+﻿@model discovery.Models.scenario
 @*
     For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
 *@
-<b>test</b>
+<div class="card">
+    <div class="card-header card-primary">
+        <h3>
+            <i class="fa fa-file-text"></i>
+            Text analyzing service
+        </h3>
+        @if (Model != null && Model.ID > 0)
+        {
+            <h4>
+                Scenario: <a href="~/scenario/Details/@Model.ID">@((Model == null) ? "" : Model.name + "(" + Model.sversion.ToString() + ")")</a>
+            </h4>
+        }
+        else
+        {
+    <h4>
+        Scenario: <a href="~/scenario">No Active scenario</a>
+    </h4>
+        }
+    </div>
+    <div class="card-body">
+        <p>
+            This service process a set patterns in bulk remote text content. In order to load dataset in to mining scenario, the follwoing steps must be taken carefully.
+        </p>
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-orange">
+                        <b>1. Scenarios </b>
+                        <i class="fas fa-cog float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            Each text analyzing process starts with a scenario. In this section the user can create, modify, delete, start, stop and reset a scenario.
+                            All the other function of the application require an active scenario. Go to <b><i>Studies -> Scenario</i></b>
+                        </p>
+                    </div>
+                    <div class="card-footer card-link text-center font-weight-bold">
+                        <a href="~/scenario/">Scenario</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-green">
+                        <b>2.Patterns</b>
+                        <i class="fa fa-language float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            This module allows user to enter list of patterns. These pattern are selectively used as analyzing entry in datasets.
+                            Analyzer also allows patterns be categoriesed and will produce results based on pattern categories as well.
+                            Go to <b><i>Perparation -> Patterns</i></b>
+                        </p>
+                    </div>
+                    @{
+                        var disable = "";
+                        var url = "patterns/";
+                    }
+                    <div class="@(disable) card-footer card-link text-center font-weight-bold">
+                        <a href="@(url)" role="button">Patterns</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-blue">
+                        <b>3. Import Data</b>
+                        <i class="fa fa-file-import float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            Import module provides various access to remote data. In this module user can connect to (Remote file, Email, Remote service) and load data into the application
+                            In order to import data, there must be an <b><i>active scenario</i></b>. 
+                            Go to <b><i>Perparation -> Import Data</i></b>
+                        </p>
+                    </div>
+                    @{
+                        disable = "";
+                        url = "import/";
+                    }
+                    @if (Model.ID < 1)
+                    {
+                        disable = "btn disabled";
+                        url = "#";
+                    }
+                    <div class="@(disable) card-footer card-link text-center font-weight-bold">
+                        <a class="card-link" href="@(url)">Import</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-teal">
+                        <b>4. Datasets</b>
+                        <i class="fa fa fa-database float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            Dataset list contains all the imported data from remote source based on the source type in active scenario. User also can add and edit on dataset list.
+                            In order to access datasets, there must be an <b><i>active scenario</i></b>.
+                            Go to <b><i>Perparation -> Datasets</i></b>
+                        </p>
+                    </div>
+                    @{
+                        disable = "";
+                        url = "dataset/";
+                    }
+                    @if (Model.ID < 1)
+                    {
+                        disable = "btn disabled";
+                        url = "#";
+                    }
+                    <div class="@(disable) card-footer card-link text-center font-weight-bold">
+                        <a class="card-link" href="@(url)">Datasets</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-indigo">
+                        <b>5. Analyze</b>
+                        <i class="fas fa-calendar-alt float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            Analyze module does the main function of the application. This module work on the patterns and dataset in order to find the meaningful results. 
+                            Currently, application provide 2 method of analyzing <b><i>Convetional</i></b> and <b><i>AI Based</i></b>
+                            In order to access analyze, there must be an <b><i>active scenario</i></b>.
+                            Go to <b><i>Analyze -> Start</i></b>
+                        </p>
+                    </div>
+                    @{
+                        disable = "";
+                        url = "analyze/";
+                    }
+                    @if (Model.ID < 1)
+                    {
+                        disable = "btn disabled";
+                        url = "#";
+                    }
+                    <div class="@(disable) card-footer card-link text-center font-weight-bold">
+                        <a class="card-link" href="@(url)">Analyze</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-12">
+                <div class="card h-100">
+                    <div class="card-header bg-gradient-maroon">
+                        <b>6. Result</b>
+                        <i class="fas fa-chart-pie float-right"></i>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            This module provides the various representation of analyzing results.
+                            In order to access analyze, there must be an <b><i>active scenario</i></b>.
+                            Go to <b><i>Result -> Overview</i></b>
+                        </p>
+                    </div>
+                    @{
+                        disable = "";
+                        url = "result/";
+                    }
+                    @if (Model.status < 2)
+                    {
+                        disable = "btn disabled";
+                        url = "#";
+                    }
+                    <div class="@(disable) card-footer card-link text-center font-weight-bold">
+                        <a class="card-link" href="@(url)">Result</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

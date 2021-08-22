@@ -17,7 +17,10 @@ namespace discovery.Models
             
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=patternproject;Persist Security Info=True;User ID=discovery;Password=1234567890;Encrypt=False;ApplicationIntent=ReadWrite;");
+                optionsBuilder.UseSqlServer(
+                    "Data Source=.;Initial Catalog=patternproject;Persist Security Info=True;User ID=discovery;Password=1234567890;Encrypt=False;ApplicationIntent=ReadWrite;",
+                    opts => opts.CommandTimeout((int)TimeSpan.FromMinutes(30).TotalSeconds)
+                    );
             }
         }
 

@@ -5,7 +5,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pattern Discovery</title>
+    @{ 
+        var pageTitle = (ViewBag.Title != null) ? ViewBag.Title : "";
+    }
+    <title>
+        Pattern Discovery - @(pageTitle) 
+    </title>
 
 
     <environment names="Development">
@@ -27,7 +32,7 @@
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="../../index3.html" class="nav-link">Home</a>
+                    <a href="~/Home" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="#" class="nav-link">Contact</a>
@@ -143,13 +148,13 @@
                                 </li>
                                 <li class="nav-item">
                                     <a href="~/import" class="nav-link">
-                                        <i class="fa fa-database" aria-hidden="true"></i>
+                                        <i class="fa fa-file-import" aria-hidden="true"></i>
                                         <p>Import Data</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="~/dataset" class="nav-link">
-                                        <i class="fa fa-file-prescription" aria-hidden="true"></i>
+                                        <i class="fa fa-database" aria-hidden="true"></i>
                                         <p>Datasets</p>
                                     </a>
                                 </li>
@@ -157,7 +162,7 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <i class="nav-icon fas fa-calendar-alt"></i>
                                 <p>
                                     Analyze
                                     <i class="right fas fa-angle-left"></i>
@@ -182,16 +187,16 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="~/result/overview" class="nav-link">
+                                    <a href="~/result/" class="nav-link">
                                         <p>
                                             Overview
                                         </p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="~/result" class="nav-link">
+                                    <a href="~/result/list" class="nav-link">
                                         <p>
-                                            Details
+                                            List
                                         </p>
                                     </a>
                                 </li>
@@ -219,13 +224,14 @@
                     <div class="row mb-2">
                         <div class="col-sm-6">
                             <h1>
-                                @*This title must be completed dynamically*@
+                                @if (@ViewBag.Title != null)
+                                    @(ViewBag.Title)
                             </h1>
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                @*THis part must be copleted dynamically*@
+                                @*TODO: This part must be copleted dynamically*@
                             </ol>
                         </div>
                     </div>
@@ -273,7 +279,5 @@
         <!-- /.control-sidebar -->
     </div>
     <!-- ./wrapper -->
-    <!-- jQuery -->
-
 </body>
 </html>

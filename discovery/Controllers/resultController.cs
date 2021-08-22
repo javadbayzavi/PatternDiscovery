@@ -19,6 +19,13 @@ namespace discovery.Controllers
 
         public IActionResult Index()
         {
+            this.setPageTitle("Index");
+
+            return View();
+        }
+        public IActionResult list()
+        {
+            this.setPageTitle("list");
 
             //Scenario Checking
             ViewBag.currentScenario = (this.currentScenario < 1);
@@ -47,6 +54,8 @@ namespace discovery.Controllers
 
         public IActionResult charts()
         {
+            this.setPageTitle("charts");
+
             //Scenario Checking
             ViewBag.currentScenario = false;
             if (this.currentScenario < 1)
@@ -58,6 +67,8 @@ namespace discovery.Controllers
         }
         public IActionResult overview()
         {
+            this.setPageTitle("overview");
+
             return View();
         }
 
@@ -71,6 +82,32 @@ namespace discovery.Controllers
         public override bool needAuthentication()
         {
             return true;
+        }
+        //template method for setting the title of each page
+        public override void setPageTitle(string actionRequester)
+        {
+            string _pageTitle = "";
+
+            switch (actionRequester)
+            {
+                case "list":
+                    _pageTitle = "Result List";
+                    break;
+                case "details":
+                    _pageTitle = "Result Details";
+                    break;
+                case "charts":
+                    _pageTitle = "Charts";
+                    break;
+                case "Index":
+                    _pageTitle = "Result Overview";
+                    break;
+                default:
+                    _pageTitle = "Result Details";
+                    break;
+            }
+
+            ViewBag.Title = _pageTitle;
         }
     }
 }

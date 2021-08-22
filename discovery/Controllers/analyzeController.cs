@@ -23,6 +23,8 @@ namespace discovery.Controllers
         // GET: analyze
         public ActionResult Index()
         {
+            this.setPageTitle("Index");
+
             //Scenario Checking
             ViewBag.currentScenario = false;
             ViewBag.notready = false;
@@ -41,6 +43,8 @@ namespace discovery.Controllers
         // GET: analyze/conventional
         public ActionResult conventional()
         {
+            this.setPageTitle("conventional");
+
             ViewBag.wrongmethod = (this.getCurrentScenario().method == (int)scenarionmethod.AIBased);
             if ((bool)ViewBag.wrongmethod)
                 return View(new List<patternsviewmodel>());
@@ -109,6 +113,30 @@ namespace discovery.Controllers
             }
         }
 
+        public ActionResult ai()
+        {
+            this.setPageTitle("ai");
+
+            ViewBag.wrongmethod = (this.getCurrentScenario().method == (int)scenarionmethod.AIBased);
+            if ((bool)ViewBag.wrongmethod)
+                return View(new List<patternsviewmodel>());
+
+            //Load pattern 
+            return View(this.ormProxy.patterns.Select(item => new patternsviewmodel
+            {
+                category = item.category.ToString(),
+                ID = item.ID,
+                title = item.title
+            }));
+        }
+
+        // POST: analyze/ai
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ai(int[] id)
+        {
+            return View(nameof(Index));
+        }
         //Hook method for scenrio cheking
         public override bool needScenario()
         {
@@ -119,6 +147,30 @@ namespace discovery.Controllers
         public override bool needAuthentication()
         {
             return true;
+        }
+
+        //template method for setting the title of each page
+        public override void setPageTitle(string actionRequester)
+        {
+            string _pageTitle = "";
+
+            switch (actionRequester)
+            {
+               case "Index":
+                _pageTitle = "Index";
+                break;
+                case "conventional":
+                    _pageTitle = "Conventional Analyze";
+                    break;
+                case "ai":
+                    _pageTitle = "AI-Based Analyze";
+                    break;
+                default:
+                    _pageTitle = "Analyzing...";
+                    break;
+            }
+
+            ViewBag.Title = _pageTitle;
         }
     }
 }

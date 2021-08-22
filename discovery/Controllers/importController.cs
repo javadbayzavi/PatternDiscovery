@@ -24,6 +24,8 @@ namespace discovery.Controllers
         // GET: import
         public ActionResult Index()
         {
+            this.setPageTitle("Index");
+
             //Scenario Checking
             ViewBag.currentScenario = false;
             if (this.currentScenario < 1)
@@ -33,8 +35,8 @@ namespace discovery.Controllers
             }
 
 
-                //Show the status of the current scenario
-                string url = this._session.GetString(Keys._REMOTEURL);
+            //Show the status of the current scenario
+            string url = this._session.GetString(Keys._REMOTEURL);
 
             return View(this.getCurrentScenario());
         }
@@ -77,6 +79,8 @@ namespace discovery.Controllers
         //GET: import/LoadRemoteFileList
         public ActionResult LoadRemoteFileList()
         {
+            this.setPageTitle("LoadRemoteFileList");
+
             ViewBag.wrongtype = false;
             var item = getCurrentScenario();
             ViewBag.sourcetype = ((scenariosourcetype)item.sourcetype).ToString();
@@ -116,6 +120,8 @@ namespace discovery.Controllers
         }
         public ActionResult ImportData()
         {
+            this.setPageTitle("ImportData");
+
             ViewBag.downlaoded = true;
             if (getCurrentScenario().status < (int) scenariostatus.Downloaded)
                 ViewBag.downlaoded = false;
@@ -187,6 +193,29 @@ namespace discovery.Controllers
         public override bool needAuthentication()
         {
             return true;
+        }
+        //template method for setting the title of each page
+        public override void setPageTitle(string actionRequester)
+        {
+            string _pageTitle = "";
+
+            switch (actionRequester)
+            {
+                case "Index":
+                    _pageTitle = "Data Import";
+                    break;
+                case "ImportData":
+                    _pageTitle = "Import";
+                    break;
+                case "LoadRemoteFileList":
+                    _pageTitle = "Load Remote Data";
+                    break;
+                default:
+                    _pageTitle = "Data Import";
+                    break;
+            }
+
+            ViewBag.Title = _pageTitle;
         }
     }
 }

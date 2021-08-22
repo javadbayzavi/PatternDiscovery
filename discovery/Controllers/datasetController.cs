@@ -23,11 +23,15 @@ namespace discovery.Controllers
         // GET: dataset/Index
         public ActionResult Index()
         {
-                return RedirectToAction("List");
+            this.setPageTitle("Index");
+
+            return RedirectToAction("List");
         }
         // GET: dataset/List
         public ActionResult List()
         {
+            this.setPageTitle("Index");
+
             ViewBag.currentScenario = (this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == null || this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == "");
             if ((bool)ViewBag.currentScenario)
                 return View("List", new List<datasetviewmodel>());
@@ -49,6 +53,8 @@ namespace discovery.Controllers
         // GET: dataset/Create
         public ActionResult Create()
         {
+            this.setPageTitle("Create");
+
             //Load category models from a hook method
             return View();
         }
@@ -75,6 +81,8 @@ namespace discovery.Controllers
         // GET: dataset/Edit/5
         public ActionResult Edit(int id)
         {
+            this.setPageTitle("Edit");
+
             var item = this.ormProxy.dataset.First(a => a.ID == id);
             return View(item);
         }
@@ -98,6 +106,8 @@ namespace discovery.Controllers
         // GET: dataset/Details/5
         public ActionResult Details(int id)
         {
+            this.setPageTitle("Details");
+
             var item = this.ormProxy.dataset.First(a => a.ID == id);
             return View(item);
         }
@@ -105,6 +115,8 @@ namespace discovery.Controllers
         // GET: dataset/Delete/5
         public ActionResult Delete(int id)
         {
+            this.setPageTitle("Delete");
+
             try
             {
                 var item = this.ormProxy.dataset.FirstOrDefault(a => a.ID == id);
@@ -127,6 +139,35 @@ namespace discovery.Controllers
         public override bool needAuthentication()
         {
             return true;
+        }
+        //template method for setting the title of each page
+        public override void setPageTitle(string actionRequester)
+        {
+            string _pageTitle = "";
+
+            switch (actionRequester)
+            {
+                case "Index":
+                    _pageTitle = "Dataset Management";
+                    break;
+                case "Create":
+                    _pageTitle = "Create Dataset Item";
+                    break;
+                case "Edit":
+                    _pageTitle = "Edit Dataset Item";
+                    break;
+                case "Delete":
+                    _pageTitle = "Delete Dataset Item";
+                    break;
+                case "Details":
+                    _pageTitle = "Details of Dataset Item";
+                    break;
+                default:
+                    _pageTitle = "Dataset Management";
+                    break;
+            }
+
+            ViewBag.Title = _pageTitle;
         }
     }
 }

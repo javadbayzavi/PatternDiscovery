@@ -110,5 +110,7 @@ namespace discovery.Library.Core
 
         public abstract bool needAuthentication();
 
+        public abstract void setPageTitle(string actionRequester);
+
     }
 }
