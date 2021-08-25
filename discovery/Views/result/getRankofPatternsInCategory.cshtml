@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="card-body">
-        @Html.DropDownList("rnkforcategories", discovery.Models.patternsviewmodel.getCategories(), "Select on of the following categories", new { @class = "formm-control" })
+        @Html.DropDownList("rnkforcategories", null , "Select on of the following categories", new { @class = "formm-control" })
         <canvas id="barRankOfPatternInCategoriesChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
     </div>
     <!-- /.card-body -->
@@ -23,16 +23,7 @@
         var barData = [];
 
         for (let index = 0; index < chartData.length; index++) {
-            //Caculation of others
-            //if (index > 9) {
-            //    if (index == 10) {
-            //        barLabels.push("Others");
-            //        barData.push(chartData[index].count);
-            //    }
-            //    else
-            //        barData[10] += chartData[index].count;
-            //}
-            //else {
+
             barLabels.push(chartData[index].pattern);
             barData.push(chartData[index].count);
             //}

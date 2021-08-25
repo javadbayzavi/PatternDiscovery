@@ -5,23 +5,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.ML.Data;
 
 namespace discovery.Models
 {
-    [Serializable]
-    //This model hold the information on representation matter
-    public class datasetviewmodel
+    //This model hold the information about mail document
+    public class datasetinputanalyzemodel
     {
         public int ID { get; set; }
         
+        [Required]
+        //Title of the mail document
+        [LoadColumn(0)]
         public string subject { get; set; }
 
-        //Date of the publish
-        public string date { get; set; }
+        //Body of the mail document
+        [LoadColumn(1)]
+        public string body { get; set; }
 
-        //Author of the document
-        public string author { get; set; }
-        
-        
     }
 }

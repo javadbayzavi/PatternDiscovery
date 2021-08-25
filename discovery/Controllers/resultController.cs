@@ -6,6 +6,7 @@ using discovery.Library.Core;
 using discovery.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using static discovery.Models.patternsviewmodel;
 
 namespace discovery.Controllers
@@ -44,7 +45,7 @@ namespace discovery.Controllers
                 subject = item.datasetItem.subject,
                 ID = item.ID,
                 datasetid = item.datasetitemid,
-                category = (categories)item.pattern.category,
+                category = item.pattern.category.category,
                 patternid = item.patternid,
                 pattern = item.pattern.title ,
                 count = item.count
@@ -55,6 +56,9 @@ namespace discovery.Controllers
         public IActionResult charts()
         {
             this.setPageTitle("charts");
+
+            ViewBag.rnkforcategories = new SelectList(this.ormProxy.categories, "ID", "category");
+            ViewBag.categories = new SelectList(this.ormProxy.categories, "ID", "category");
 
             //Scenario Checking
             ViewBag.currentScenario = false;

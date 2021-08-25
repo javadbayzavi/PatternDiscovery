@@ -1,0 +1,31 @@
+﻿@model discovery.Models.categoryItem
+
+<div class="card card-primary">
+    <div class="card-header">
+
+        <a href="~/patterns"> <span class="fa fa-fast-backward fa-backward float-right"></span></a>
+    </div>
+    <!-- /.card-header -->
+    <!-- form start -->
+    <form action="~/categories/Edit" method="post">
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.ID)
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="text" class="control-label"> Title: </label>
+                <div class="col">
+                    @Html.TextBoxFor(model => model.category, "", new { @class = "formm-control" })
+                    <span asp-validation-for="text" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="form-group">
+                <input type="submit" value="Update" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>
+</div>
+
+

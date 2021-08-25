@@ -43,6 +43,7 @@ namespace discovery.Controllers
 
             ViewBag.hadData = (this.ormProxy.dataset.Count(a => a.scenarioid == this.currentScenario) > 0);
             ViewBag.hasFiles = (System.IO.Directory.GetFiles(Keys._SCENARIODIRECTORY).Count(a => a.Contains(this.ormProxy.scenario.Where(bb => bb.ID == id).First().sversion.ToString())) > 0);
+            ViewBag.id = id;
 
             return View();
         }
@@ -75,7 +76,7 @@ namespace discovery.Controllers
             scenario.status = (int)scenariostatus.Created;
             this.ormProxy.scenario.Update(scenario);
 
-            this.ormProxy.SaveChanges();
+            this.ormProxy.SaveChangesAsync();
             this._session.SetString(Keys._MSG,"Scenario has successfully been reset");
             return RedirectToAction(nameof(Index));
         }
@@ -208,7 +209,7 @@ namespace discovery.Controllers
                 this.ormProxy.dataset.RemoveRange(datasets);
                 this.ormProxy.result.RemoveRange(results);
 
-                this.ormProxy.SaveChanges();
+                this.ormProxy.SaveChangesAsync();
                 this._session.SetString(Keys._MSG, "Scenario has successfully been deleted");
 
                 var item = this.ormProxy.scenario.FirstOrDefault(a => a.ID == id);

@@ -96,11 +96,11 @@ namespace discovery.Controllers
         {
             var res = this.ormProxy.result
                 .Where(item => item.scenarioid == this.currentScenario)
-                .Include(a => a.pattern).ToList()
-                .GroupBy(a => a.pattern.category)
+                .Include(a => a.pattern).ThenInclude(a => a.category).ToList()
+                .GroupBy(a => a.pattern.categoryId)
                 .Select(a => new categoryrankingviewmodel()
                 {
-                    category = ((patternsviewmodel.categories)a.First().pattern.category).ToString(),
+                    category = a.FirstOrDefault().pattern.category.category,
                     count = a.Sum(b => b.count)
                 });
 
@@ -128,7 +128,7 @@ namespace discovery.Controllers
         public object getPatternRankinCategory(int categoryId)
         {
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario && item.pattern.category == categoryId)
+                .Where(item => item.scenarioid == this.currentScenario && item.pattern.categoryId == categoryId)
                 .Include(a => a.pattern).ToList()
                 .GroupBy(a => a.patternid)
                 .Select(outputItem => new patternrankingviewmodel()
@@ -151,7 +151,6 @@ namespace discovery.Controllers
                 .Select(a => new yearrankingviewmodel()
                 {
                     year = (regexpr.Match(a.datasetItem.date).Success) ? regexpr.Match(a.datasetItem.date).Value : "2010",
-                    //year = DateTime.Parse((regexpr.Match(a.datasetItem.date).Success) ? regexpr.Match(a.datasetItem.date).Value : "2010").Year.ToString(),
                     count = a.count
                 })
                 .GroupBy(a => a.year)
@@ -245,13 +244,13 @@ namespace discovery.Controllers
         {
             var result = (float)this.ormProxy.result
                 .Where(item =>
-                item.scenarioid == this.currentScenario && item.pattern.category == id).
+                item.scenarioid == this.currentScenario && item.pattern.categoryId == id).
                 ToList()
                 //In order to remove duplicate patterns in result
                 .GroupBy(a => a.patternid)
                 .Count()
                 / (float)this.ormProxy.patterns.Count(item =>
-                item.category == id);
+                item.categoryId == id);
             
             //Define an anonymous object
             return new

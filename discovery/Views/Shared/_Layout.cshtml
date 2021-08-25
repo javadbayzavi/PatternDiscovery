@@ -103,7 +103,7 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
-                        with font-awesome or any other icon font library -->
+    with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <a href="~/Home" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
@@ -133,6 +133,31 @@
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
+                                <i class="nav-icon fa fa-book" aria-hidden="true"></i>
+                                <p>
+                                    Dictionary
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/categories" class="nav-link">
+                                        <i class="nav-icon fa fa-folder"></i>
+                                        <p>
+                                            Categories
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/patterns" class="nav-link">
+                                        <i class="fa fa-language" aria-hidden="true"></i>
+                                        <p>Patterns</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-tachometer-alt"></i>
                                 <p>
                                     Perparation
@@ -140,12 +165,6 @@
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="~/patterns" class="nav-link">
-                                        <i class="fa fa-language" aria-hidden="true"></i>
-                                        <p>Patterns</p>
-                                    </a>
-                                </li>
                                 <li class="nav-item">
                                     <a href="~/import" class="nav-link">
                                         <i class="fa fa-file-import" aria-hidden="true"></i>

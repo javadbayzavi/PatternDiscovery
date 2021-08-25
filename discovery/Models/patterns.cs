@@ -19,7 +19,11 @@ namespace discovery.Models
         [Required]
         public string title { get; set; }
 
-        public int category { get; set; }
+        public int categoryId { get; set; }
+        
+        
+        [ForeignKey("categoryId")]
+        public categoryItem category { get; set; }
 
     }
 }

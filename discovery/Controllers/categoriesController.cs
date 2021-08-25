@@ -12,48 +12,36 @@ using Newtonsoft.Json;
 
 namespace discovery.Controllers
 {
-    public class patternsController : BaseController
+    public class categoriesController : BaseController
     {
-        public patternsController(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
+        public categoriesController(IHttpContextAccessor httpContextAccessor) : base(httpContextAccessor)
         {
         }
 
-        // GET: patterns
+        // GET: categories
         public ActionResult Index()
         {
             this.setPageTitle("Index");
 
-            var res = this.ormProxy.patterns.Include(a => a.category).Select(item =>
-                new patternsviewmodel()
-
-                {
-                    categoryId = item.categoryId,
-                    categoryTitle = item.category.category,
-                    ID = item.ID,
-                    title = item.title
-                }
-                );
+            var res = this.ormProxy.categories;
             return View(res);
         }
 
-        // GET: patterns/Create
+        // GET: categories/Create
         public ActionResult Create()
         {
             this.setPageTitle("Create");
-
-            //Load category models from a hook method
-            ViewBag.category = new SelectList(this.ormProxy.categories, "ID", "category");
             return View();
         }
 
-        // POST: patterns/Create
+        // POST: categories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(patterns collection)
+        public ActionResult Create(categoryItem collection)
         {
             try
             {
-                this.ormProxy.patterns.Add(collection);
+                this.ormProxy.categories.Add(collection);
                 this.ormProxy.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
@@ -63,25 +51,23 @@ namespace discovery.Controllers
             }
         }
 
-        // GET: patterns/Edit/5
+        // GET: categories/Edit/5
         public ActionResult Edit(int id)
         {
             this.setPageTitle("Edit");
 
-            var item = this.ormProxy.patterns.First(a => a.ID == id);
-            //Load category models from a hook method
-            ViewBag.category = new SelectList(this.ormProxy.categories, "ID", "category");
+            var item = this.ormProxy.categories.First(a => a.ID == id);
             return View(item);
         }
 
-        // POST: patterns/Edit/5
+        // POST: categories/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, patterns collection)
+        public ActionResult Edit(int id, categoryItem collection)
         {
             try
             {
-                this.ormProxy.patterns.Update(collection);
+                this.ormProxy.categories.Update(collection);
                 this.ormProxy.SaveChanges();
                 return RedirectToAction(nameof(Index));
             }
@@ -91,21 +77,22 @@ namespace discovery.Controllers
             }
         }
 
+        // POST: categories/Edit/5
         public ActionResult Delete(int id)
         {
             this.setPageTitle("Delete");
 
             try
             {
-                var item = this.ormProxy.patterns.FirstOrDefault(a => a.ID == id);
-                this.ormProxy.patterns.Remove(item);
+                var item = this.ormProxy.categories.FirstOrDefault(a => a.ID == id);
+                this.ormProxy.categories.Remove(item);
                 this.ormProxy.SaveChanges();
-                this._session.SetString(Keys._MSG, "Pattern Successfully Deleted");
+                this._session.SetString(Keys._MSG, "Category Successfully Deleted");
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                this._session.SetString(Keys._MSG, "Delete pattern Failed");
+                this._session.SetString(Keys._MSG, "Delete category Failed");
                 return View(nameof(Index));
             }
         }
@@ -128,19 +115,19 @@ namespace discovery.Controllers
             switch (actionRequester)
             {
                 case "Index":
-                    _pageTitle = "Pattern Management";
+                    _pageTitle = "Category Management";
                     break;
                 case "Create":
-                    _pageTitle = "Create Pattern";
+                    _pageTitle = "Create Category";
                     break;
                 case "Delete":
-                    _pageTitle = "Delete Pattern";
+                    _pageTitle = "Delete Category";
                     break;
                 case "Edit":
-                    _pageTitle = "Edit Pattern";
+                    _pageTitle = "Edit Category";
                     break;
                 default:
-                    _pageTitle = "Pattern Management";
+                    _pageTitle = "Category Management";
                     break;
             }
 

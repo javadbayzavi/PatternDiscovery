@@ -45,33 +45,52 @@ namespace discovery.Controllers
         [HttpPost]
         public ActionResult DownloadFiles(int[] id)
         {
-            string url = this._session.GetString(Keys._REMOTEURL);
-            //Log the download vesion for the scenario
-            Fileoperations.WriteTofile(Keys._SCENARIODIRECTORY + "/" + getCurrentScenario().sversion.ToString() + ".txt", url);
-
-            var version = getCurrentScenario().sversion.ToString();
-
-            var downlaoded = Fileoperations.downloadFiles(ref id , version);
-            if (downlaoded)
+            try
             {
-                //After successfully downloading all remote files session address sets to null that shows the operation can run from the start again
-                this._session.SetString(Keys._REMOTEURL, "");
+                //Check for existance of temp directory
+                if (System.IO.Directory.Exists(Keys._TEMPDIRECTORY) == false)
+                    System.IO.Directory.CreateDirectory(Keys._TEMPDIRECTORY);
 
-                //Update the current scenario status
-                var scen = getCurrentScenario();
-                //Set the status to downloaded
-                scen.status = (int)scenariostatus.Downloaded;
-                scen.datasource = url;
-                this.ormProxy.scenario.Update(scen);
-                this.ormProxy.SaveChanges();
+                //Check for existance of scenario directory
+                if (System.IO.Directory.Exists(Keys._SCENARIODIRECTORY) == false)
+                    System.IO.Directory.CreateDirectory(Keys._SCENARIODIRECTORY);
 
-                this._session.SetString(Keys._MSG, "All Selected files have downloaded");
+                string url = this._session.GetString(Keys._REMOTEURL);
+                //Log the download vesion for the scenario
+                Fileoperations.WriteTofile(Keys._SCENARIODIRECTORY + "/" + getCurrentScenario().sversion.ToString() + ".txt", url);
 
-                return RedirectToAction(nameof(Index));
+                var version = getCurrentScenario().sversion.ToString();
+
+                //TODO: This is a heavey process function
+                var downlaoded = Fileoperations.downloadFiles(ref id, version);
+
+                if (downlaoded)
+                {
+                    //After successfully downloading all remote files session address sets to null that shows the operation can run from the start again
+                    this._session.SetString(Keys._REMOTEURL, "");
+
+                    //Update the current scenario status
+                    var scen = getCurrentScenario();
+                    //Set the status to downloaded
+                    scen.status = (int)scenariostatus.Downloaded;
+                    scen.datasource = url;
+                    this.ormProxy.scenario.Update(scen);
+                    this.ormProxy.SaveChanges();
+
+                    this._session.SetString(Keys._MSG, "All Selected files have downloaded");
+
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    this._session.SetString(Keys._MSG, "File donwload failed");
+                    return RedirectToAction("LoadRemoteFileList");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                this._session.SetString(Keys._MSG, "File donwload failed");
+
+                this._session.SetString(Keys._MSG, "File download failed. Error:" + ex.Message);
                 return RedirectToAction("LoadRemoteFileList");
             }
         }
@@ -115,7 +134,8 @@ namespace discovery.Controllers
             }
             catch(Exception ex)
             {
-                return View();
+                this._session.SetString(Keys._MSG, "Loading file list has failed");
+                return View("LoadRemoteFileList");
             }
         }
         public ActionResult ImportData()
@@ -126,7 +146,7 @@ namespace discovery.Controllers
             if (getCurrentScenario().status < (int) scenariostatus.Downloaded)
                 ViewBag.downlaoded = false;
             //Number of files downloaded for this scenario
-            ViewBag.filenumbers = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.currentScenario.ToString())).Count();
+            ViewBag.filenumbers = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.getCurrentScenario().sversion.ToString())).Count();
 
             return View();
         }
@@ -137,7 +157,6 @@ namespace discovery.Controllers
         public ActionResult ImportData(string version)
         {
             //Check if the user want to import data for scenario that has no downloaded file
-
 
             //Use factory method to create appropriate file document based on downloaded file in temp directory
             var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Select(a =>
@@ -172,6 +191,7 @@ namespace discovery.Controllers
 
             //Update the current scenario status
             var scen = getCurrentScenario();
+
             //Set the status to downloaded
             scen.status = (int)scenariostatus.Importted;
             this.ormProxy.scenario.Update(scen);

@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 
 namespace discovery.Library.text.analyzer
 {
-    public class ConventionalSubmitter : Submitter
+    public class AiSubmitter : Submitter
     {
-        public ConventionalSubmitter(DbContext dbContext):base(dbContext)
+        public AiSubmitter(DbContext dbContext) : base(dbContext)
         {
             this.SetContext(dbContext);
         }
         public override void Submit()
         {
+            //Do something before saving data into data store
             this.GetContext().SaveChanges();
         }
     }

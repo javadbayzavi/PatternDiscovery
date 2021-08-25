@@ -5,10 +5,15 @@ using System.Threading.Tasks;
 
 namespace discovery.Library.text.analyzer
 {
-    public interface IAnalyzer
+    public interface IAnalyzer : ITokenizer, ICleaner, IFilterable, IStemable, ILemmatizable, ITransformable
     {
-        void Analyze(string pattern);
-        void Tokenize();
+        void Analyze(object pattern);
+        
+        //Customized Analyze
+        void Analyze(object pattern, IAnalyzerExecutor executor);
+        
+        //Customized Submission
         void SubmitResult(ISubmitter submitter);
+        void SubmitResult();
     }
 }

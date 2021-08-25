@@ -28,6 +28,7 @@ namespace discovery.Models
         public DbSet<result> result { get; set; }
         public DbSet<dataset> dataset { get; set; }
         public DbSet<scenario> scenario { get; set; }
+        public DbSet<categoryItem> categories { get; set; }
     }
 
 

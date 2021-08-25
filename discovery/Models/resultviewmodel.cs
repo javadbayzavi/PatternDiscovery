@@ -20,7 +20,7 @@ namespace discovery.Models
         public string pattern { get; set; }
 
         public string subject { get; set; }
-        public categories category { get; set; }
+        public string category { get; set; }
 
         public int patternid { get; set; }
         public int datasetid { get; set; }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using discovery.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -9,27 +10,52 @@ namespace discovery.Library.text.analyzer
     //Concrete analyzer which is using database engine to do anaylzing process
     public class ConventionalAnalyzer : Analyzer
     {
-        private ConventionalSubmitter _submitter;
         public ConventionalAnalyzer(ISubmitter submitter) : base(submitter)
         {
-            this._submitter = (ConventionalSubmitter)submitter;
         }
-        public override void SubmitResult(ISubmitter submitter)
-        {
-            //load result into the submitter context for adding to database
-            this._submitter.context.result.AddRange(this.results);
 
-            submitter.Submit();
+
+        //Hook method for cleaning
+        public override void Clean()
+        {
+            
+        }
+
+        //Hook method for Filtering
+        public override void Filter()
+        {
+        }
+
+        //Hook method for Lemmatize
+        public override void Lemmatize()
+        {
+        }
+
+        //Hook method for Stemming
+        public override void Stemming()
+        {
+        }
+
+        public override void SubmitResult()
+        {
+            //Set context of this analyzer to discovery DbContext
+            var context = (discoveryContext)this._submitterEngine.GetContext();
+
+            //load result into the submitter context for adding to database
+            context.result.AddRange(this.results);
+
+            this._submitterEngine.Submit();
         }
 
         public override void Tokenize()
         {
             int id = System.Convert.ToInt32(this._pattern);
+            var context = (discoveryContext)this._submitterEngine.GetContext();
 
-            var pattern = this._submitter.context.patterns.First(item => item.ID == id);
+            var pattern = context.patterns.First(item => item.ID == id);
 
             //Do Conventional text analyze on database engine
-            this.results = this._submitter.context.dataset.Where(a =>
+            this.results = context.dataset.Where(a =>
             a.body.Contains(pattern.title.ToLower()) == true
             ).Select(item => new Models.result
             {
@@ -39,6 +65,12 @@ namespace discovery.Library.text.analyzer
                 partofdocument = 1,
                 scenarioid = item.scenarioid
             }); ;
+        }
+
+        //Hook method for Transform
+        public override void Transform()
+        {
+            
         }
     }
 }
