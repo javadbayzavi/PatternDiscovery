@@ -1,0 +1,42 @@
+﻿@model   discovery.Models.LoginViewModel
+<div class="card">
+    <div class="card-header">
+        Login to application
+    </div>
+    <div class="card-body">
+        <form method="post" asp-action="Login" asp-controller="Account">
+            <div class="row w-100">
+                <div class="col">
+                    <span asp-validation-summary="All" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="row w-100 m-2">
+                <div class="form-group">
+                    <div class="col-12">
+                        <label asp-for="Username">User Name:</label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="Username">Password:</label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="col-12">
+                        <label asp-for="RememberMe">
+                            <input asp-for="RememberMe" />
+                            @Html.DisplayNameFor(model => model.RememberMe)
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="row w-100 m-2">
+                <div class="col-12">
+                    <div class="form-group">
+                        <input type="submit" value="Login" class="btn-primary" />
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

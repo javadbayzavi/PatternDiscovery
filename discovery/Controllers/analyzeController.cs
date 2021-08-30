@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Transactions;
 using discovery.Library.Core;
-using discovery.Library.text.analyzer;
+using discovery.Library.analyzer;
 using discovery.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -158,7 +158,7 @@ namespace discovery.Controllers
                     foreach (var pattern in id)
                     {
                         //Contatinate all selected patterns to make a long inputString
-                        inputPattern += this.ormProxy.patterns.Find(pattern).title + " ";
+                        inputPattern += this.ormProxy.patterns.Find(pattern).title + ",";
                     }
 
                     //Create analyzing interface throguh factory method and inject dbcontext as a submitter to it
@@ -172,7 +172,7 @@ namespace discovery.Controllers
                     catch (Exception ex)
                     {
                         this._session.SetString(Keys._MSG, "Analyzing process has failed for. Please restart the process");
-                        return RedirectToAction("conventional");
+                        return RedirectToAction("ai");
                     }
                     //Update the current scenario status
                     var scen = getCurrentScenario();
@@ -192,7 +192,7 @@ namespace discovery.Controllers
             catch (Exception ex)
             {
                 this._session.SetString(Keys._MSG, "Analyzing process internal error");
-                return RedirectToAction("conventional");
+                return RedirectToAction("ai");
             }
         }
         //Hook method for scenrio cheking

@@ -12,21 +12,21 @@
         <div class="card-body">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="text" class="control-label"> Name: </label>
+                <label asp-for="name" class="control-label"> Name: </label>
                 <div class="col">
                     @Html.TextBoxFor(model => model.name, "", new { @class = "form-control" })
-                    <span asp-validation-for="text" class="text-danger"></span>
+                    <span asp-validation-for="name" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="category" class="control-label">Method: </label>
+                <label asp-for="method" class="control-label">Method: </label>
                 <div class="col">
                     @Html.DropDownList("method", null, "Select one item from the list", new { @class = "formm-control" })
                     <span asp-validation-for="method" class="text-danger"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="category" class="control-label">Source Type: </label>
+                <label asp-for="sourcetype" class="control-label">Source Type: </label>
                 <div class="col">
                     @Html.DropDownList("sourcetype", null, "Select one item from the list", new { @class = "formm-control" })
                     <span asp-validation-for="sourcetype" class="text-danger"></span>

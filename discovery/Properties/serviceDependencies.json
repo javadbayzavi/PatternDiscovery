@@ -6,6 +6,10 @@
     "mssql1": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:patterndiscovery"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:userContextConnection"
     }
   }
 }

@@ -11,7 +11,7 @@ using Microsoft.ML.Data;
 namespace discovery.Models
 {
     //This model hold the prediction result of ai analyzing
-    public class datasetpredictedmodel : result
+    public class datasetpredictedmodel : datasetinputanalyzemodel
     {
         [ColumnName("PredictedLabel")]
         public float Prediction { get; set; }
@@ -19,7 +19,6 @@ namespace discovery.Models
         public float Probability { get; set; }
 
         public float[] Score { get; set; }
-
     }
 }
 

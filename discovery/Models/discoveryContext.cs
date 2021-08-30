@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -9,9 +10,14 @@ namespace discovery.Models
 {
     public class discoveryContext : DbContext
     {
-        //public discoveryContext(DbContextOptions options) : base(options)
-        //{ 
-        //}
+        public discoveryContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        public discoveryContext() : base()
+        {
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             

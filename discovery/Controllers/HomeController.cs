@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using discovery.Library.Core;
 using discovery.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ML;

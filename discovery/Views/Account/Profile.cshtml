@@ -1,0 +1,14 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<div class="card">
+    <div class="card-header">
+        Profile @UserManager.GetUserName(User)
+    </div>
+    <div>
+        Dear @UserManager.GetUserName(User)! <br />
+        This page will be constructed as soon as possible
+    </div>
+</div>
