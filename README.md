@@ -10,8 +10,8 @@ The scenario starts with connection to a mailing list (in this case) and fetch t
 The prototype using the following open source packages:
 ML.NET - Microsoft Maching Learning for .NET developers https://dotnet.microsoft.com/apps/machinelearning-ai/ml-dotnet   <br />
 AdminLTE - UI dashboarding tool https://github.com/ColorlibHQ/AdminLTE <br />
-Custom Identity Management - https://github.com/iammukeshm/PermissionManagement.MVC.git <br />
-
+Custom Identity Management - https://github.com/iammukeshm/PermissionManagement.MVC <br />
+Text Stemmer - https://github.com/annytab/a-stemmer/blob/master/Annytab.Stemmer/EnglishStemmer.cs <br /> <br />
 <B>Depyloment</B><br />
 Will be update ASAP
 
