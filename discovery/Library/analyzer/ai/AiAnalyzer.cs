@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Annytab.Stemmer;
 using discovery.Models;
 using Microsoft.ML;
 using Microsoft.ML.Data;
@@ -15,25 +16,18 @@ namespace discovery.Library.analyzer
     public class AiAnalyzer : Analyzer
     {
         private IDataView _data;
+        private List<datasetinputanalyzemodel> _rawdata = new List<datasetinputanalyzemodel>();
         private IDataView _keys;
         private MLContext _analyzeEngine;
         private ITransformer _trainedModel;
         private IEstimator<ITransformer> _pipeline;
         private PredictionEngine<datasetinputanalyzemodel, datasetpredictedmodel> _predictionEngine;
+        private IStemmer _stemmerEngine = new EnglishStemmer();
 
-        public AiAnalyzer(ISubmitter submitter) : base(submitter)
+        public AiAnalyzer(ISubmitter submitter, int scenario) : base(submitter, scenario)
         {
             //Initialize Text analyzer engine
             this._analyzeEngine = new MLContext();
-            var dbcontext = (discoveryContext)this._submitterEngine.GetContext();
-
-            //Load text dataset into data componenet of text analyzer engine
-            this._data = this._analyzeEngine.Data.LoadFromEnumerable(dbcontext.dataset
-                .Select(a => new datasetinputanalyzemodel
-                {
-                    body =  a.body,
-                }).ToList());
-
         }
 
         public override void Clean()
@@ -44,8 +38,27 @@ namespace discovery.Library.analyzer
 
         public override void Filter()
         {
-            //normalize text before any processing 
-            this._pipeline = this._analyzeEngine.Transforms.Text.NormalizeText("body");
+            var dbcontext = (discoveryContext)this._submitterEngine.GetContext();
+
+
+            string[] patterns = ((string)this._pattern).Split(",");
+            foreach (var item in patterns)
+            {
+                if (item == "")
+                    continue;
+
+                var ptrn = dbcontext.patterns.Find(Convert.ToInt32(item));
+
+                if (ptrn != null)
+                    this._rawdata.Add(new datasetinputanalyzemodel()
+                    {
+                        body = ptrn.title,
+                        ID = ptrn.ID,
+                    });
+            }
+            //inject data in to machine
+            this._data = this._analyzeEngine.Data.LoadFromEnumerable(this._rawdata);
+
         }
 
         public override void Lemmatize()
@@ -57,11 +70,18 @@ namespace discovery.Library.analyzer
 
         public override void Stemming()
         {
+            foreach (var rawItem in this._rawdata)
+            {
+                rawItem.lemmatizedbody = String.Join(" ", this._stemmerEngine.GetSteamWords(rawItem.body.Split(" ")));
+            }
+
+            //normalize text before any processing 
+            this._pipeline = this._analyzeEngine.Transforms.Text.NormalizeText("lemmatizedbody");
         }
 
         public override void Tokenize()
         {
-            this._pipeline = this._pipeline.Append(this._analyzeEngine.Transforms.Text.TokenizeIntoWords("words","body"));
+            this._pipeline = this._pipeline.Append(this._analyzeEngine.Transforms.Text.TokenizeIntoWords("words", "lemmatizedbody"));
         }
 
 
@@ -70,12 +90,22 @@ namespace discovery.Library.analyzer
             //Apply training to the model
             this._trainedModel = this._pipeline.Fit(this._data);
             this._keys = this._trainedModel.Transform(this._data);
-            this._predictionEngine = this._analyzeEngine.Model.CreatePredictionEngine<datasetinputanalyzemodel, datasetpredictedmodel>(this._trainedModel);
-            string[] patterns = ((string)this._pattern).Split(",");
-            //in a loop 
-            foreach (var ptrn in patterns)
+            this._predictionEngine = this._analyzeEngine.Model
+                .CreatePredictionEngine<datasetinputanalyzemodel, datasetpredictedmodel>(this._trainedModel);
+
+            
+            List<resultviewmodel> foundpatterns = new List<resultviewmodel>();
+            var dbcontext = (discoveryContext)this._submitterEngine.GetContext();
+
+            var targetSet = dbcontext.dataset.Where(datItem => datItem.scenarioid == this._currentscenario);
+            
+            //in a loop all the dataset will be examined for selected pattern in a trained model
+            foreach (var datasetItem in targetSet)
             {
-                var res = this._predictionEngine.Predict(new datasetinputanalyzemodel() { body = ptrn });
+                var res = this._predictionEngine.Predict(new datasetinputanalyzemodel()
+                { 
+                    lemmatizedbody = String.Join(" ", this._stemmerEngine.GetSteamWords(datasetItem.body.Split(" "))) 
+                });
 
                 VBuffer<ReadOnlyMemory<char>> slotNames = default;
                 this._keys.Schema["Score"].GetSlotNames(ref
@@ -85,22 +115,56 @@ namespace discovery.Library.analyzer
                     float>>(this._keys.Schema["Score"]);
 
                 var slots = slotNames.GetValues();
-                Console.Write("N-grams: ");
-                List<string> keyNames = new List<string>();
-               // var tti = slots.ToArray().Where(a => a.)
 
                 foreach (var featureRow in BagOfWordFeaturesColumn)
                 {
+                    //This inner foreach run for one iteration
                     foreach (var item in featureRow.Items())
-                        if(slots[item.Key].ToString().Contains(ptrn))
-                            keyNames.Add($"{slots[item.Key]}  ");
+                    {
+                        string key = $"{slots[item.Key]}";
+
+                        if (Convert.ToInt32(res.Score[item.Key]) > 0)
+                        {
+                            foreach (var fndptrn in this._rawdata.Where(a => a.lemmatizedbody.Contains(key)))
+                            {
+                                //Check to add to current found keywords
+                                if (foundpatterns.Any(fdpt => fdpt.patternid == fndptrn.ID && fdpt.datasetid == datasetItem.ID))
+                                {
+                                    foundpatterns.First(fdpt => fdpt.patternid == fndptrn.ID && fdpt.datasetid == datasetItem.ID).count += Convert.ToInt32(res.Score[item.Key]);
+                                }
+                                else
+                                {
+                                    //Add new found patterns
+                                    foundpatterns.Add(new resultviewmodel()
+                                    {
+                                        count = Convert.ToInt32(res.Score[item.Key]),
+                                        datasetid = datasetItem.ID,
+                                        patternid = fndptrn.ID
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
+            this.results = foundpatterns.Select(a => new result()
+            {
+                count = a.count,
+                datasetitemid = a.datasetid,
+                patternid = a.patternid,
+                scenarioid = this._currentscenario
+            }
+            ).AsQueryable();
         }
 
         public override void SubmitResult()
         {
+            //Set context of this analyzer to discovery DbContext
+            var context = (discoveryContext)this._submitterEngine.GetContext();
+
+            //load result into the submitter context for adding to database
+            context.result.AddRange(this.results);
             //Do some data transaciton befor submit
             this._submitterEngine.Submit();
         }

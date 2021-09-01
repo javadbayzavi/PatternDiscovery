@@ -11,13 +11,16 @@ namespace discovery.Library.analyzer
         protected ISubmitter _submitterEngine;
         protected object _pattern;
         protected IQueryable<result> results;
-
+        protected int _currentscenario;
         //This property hold the strategist of the analyzer
         protected IAnalyzerExecutor _executorEngine;
 
         //Dependency Injected to let Analayzer submit result into datawarehoue
-        public Analyzer(ISubmitter submitter)
+        public Analyzer(ISubmitter submitter,int scenario)
         {
+            //Set current active scenario
+            this._currentscenario = scenario;
+
             //set the defaul result submitter
             this._submitterEngine = submitter;
 
@@ -49,7 +52,7 @@ namespace discovery.Library.analyzer
            
             this.SubmitResult();
         }
-
+        
         //Stategy pattern for various type form of result submission into data set
         public void SubmitResult(ISubmitter submitter)
         {

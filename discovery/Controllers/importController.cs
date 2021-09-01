@@ -43,7 +43,7 @@ namespace discovery.Controllers
 
         // post: import/DownloadFiles
         [HttpPost]
-        public ActionResult DownloadFiles(int[] id)
+        public async Task<IActionResult> DownloadFiles(int[] id)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace discovery.Controllers
                 var version = getCurrentScenario().sversion.ToString();
 
                 //TODO: This is a heavey process function
-                var downlaoded = Fileoperations.downloadFiles(ref id, version);
+                var downlaoded = await Fileoperations.downloadFiles(id, version);
 
                 if (downlaoded)
                 {
@@ -154,7 +154,7 @@ namespace discovery.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         // GET: import/ImportData/
-        public ActionResult ImportData(string version)
+        public async Task<IActionResult> ImportData(string version)
         {
             //Check if the user want to import data for scenario that has no downloaded file
 
@@ -180,7 +180,7 @@ namespace discovery.Controllers
                 {
                     //Dump data to database
                     this.ormProxy.dataset.AddRange(datasets);
-                    this.ormProxy.SaveChanges();
+                    await this.ormProxy.SaveChangesAsync();
                     //free dynamic memory
                     datasets.Clear();
                 }
@@ -196,7 +196,7 @@ namespace discovery.Controllers
             scen.status = (int)scenariostatus.Importted;
             this.ormProxy.scenario.Update(scen);
 
-            this.ormProxy.SaveChanges();
+            await this.ormProxy.SaveChangesAsync();
 
             this._session.SetString(Keys._MSG, "Data Import Successfully Done!");
 
@@ -209,11 +209,6 @@ namespace discovery.Controllers
             return true;
         }
 
-        //Hook method for authentication cheking 
-        public override bool needAuthentication()
-        {
-            return true;
-        }
         //template method for setting the title of each page
         public override void setPageTitle(string actionRequester)
         {

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using static discovery.Models.patternsviewmodel;
+using discovery.Library.identity;
 
 namespace discovery.Controllers
 {
@@ -51,7 +52,9 @@ namespace discovery.Controllers
                 return View(new List<patternsviewmodel>());
 
             //Load pattern 
-            return View(this.ormProxy.patterns.Include(a => a.category).Select(item => new patternsviewmodel 
+            return View(this.ormProxy.patterns.Include(a => a.category)
+                .Where(sc => sc.category.ownerID == User.GetUserId())
+                .Select(item => new patternsviewmodel 
             { 
                 categoryId = item.categoryId,
                 categoryTitle = item.category.category,
@@ -63,7 +66,7 @@ namespace discovery.Controllers
         // POST: analyze/conventional
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult conventional(int[] id)
+        public async Task<IActionResult> conventional(int[] id)
         {
             var sid = Convert.ToInt32(this._session.GetString(Keys._CURRENTSCENARIO));
             try
@@ -81,7 +84,7 @@ namespace discovery.Controllers
                         var scenarioMethod = this.getCurrentScenario().method.ToString();
 
                         //Create analyzing interface throguh factory method and inject dbcontext as a submitter to it
-                        Analyzer analyzer = AnalyzerFactory.createAnalyzer(scenarioMethod,this.ormProxy);
+                        Analyzer analyzer = AnalyzerFactory.createAnalyzer(scenarioMethod,this.ormProxy,this.currentScenario);
 
                         //Runing the whole analyzing process through Async process
 
@@ -102,7 +105,7 @@ namespace discovery.Controllers
                     scen.status = (int)scenariostatus.Analyzed;
                     this.ormProxy.scenario.Update(scen);
 
-                    this.ormProxy.SaveChanges();
+                    await this .ormProxy.SaveChangesAsync();
 
                     transaction.Complete();
                 }
@@ -127,13 +130,15 @@ namespace discovery.Controllers
                 return View(new List<patternsviewmodel>());
 
             //Load pattern 
-            return View(this.ormProxy.patterns.Include(a => a.category).Select(item => new patternsviewmodel
-            {
-                categoryId = item.categoryId,
-                categoryTitle = item.category.category,
-                ID = item.ID,
-                title = item.title
-            }));
+            return View(this.ormProxy.patterns.Include(a => a.category)
+                .Where(sc => sc.category.ownerID == User.GetUserId())
+                .Select(item => new patternsviewmodel
+                    {
+                        categoryId = item.categoryId,
+                        categoryTitle = item.category.category,
+                        ID = item.ID,
+                        title = item.title
+                    }));
         }
 
         // POST: analyze/ai
@@ -158,14 +163,16 @@ namespace discovery.Controllers
                     foreach (var pattern in id)
                     {
                         //Contatinate all selected patterns to make a long inputString
-                        inputPattern += this.ormProxy.patterns.Find(pattern).title + ",";
+                        //inputPattern += this.ormProxy.patterns.Find(pattern).title + ",";
+                        inputPattern += pattern.ToString()+ ",";
                     }
 
                     //Create analyzing interface throguh factory method and inject dbcontext as a submitter to it
-                    Analyzer analyzer = AnalyzerFactory.createAnalyzer(scenarioMethod, this.ormProxy);
+                    Analyzer analyzer = AnalyzerFactory.createAnalyzer(scenarioMethod, this.ormProxy, this.currentScenario);
 
                     try
                     {
+                        
                         //Runing the whole analyzing process through Async process
                         analyzer.Analyze(inputPattern);
                     }
@@ -197,12 +204,6 @@ namespace discovery.Controllers
         }
         //Hook method for scenrio cheking
         public override bool needScenario()
-        {
-            return true;
-        }
-
-        //Hook method for authentication cheking 
-        public override bool needAuthentication()
         {
             return true;
         }

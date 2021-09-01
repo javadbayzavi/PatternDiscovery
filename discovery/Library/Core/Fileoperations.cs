@@ -68,7 +68,7 @@ namespace discovery.Library.Core
             }
         }
 
-        public static bool downloadFiles(ref int[] filelist,string version)
+        public static async Task<bool> downloadFiles( int[] filelist,string version)
         {
             if (File.Exists(Keys._SCENARIODIRECTORY + "/" + version + ".txt") == false)
                 return false;

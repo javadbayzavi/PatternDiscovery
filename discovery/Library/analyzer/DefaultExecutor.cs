@@ -18,14 +18,14 @@ namespace discovery.Library.analyzer
             //1.Filtering
             this._context.Filter();
 
-            //2. Tokenization
+            //2. Stemming
+            this._context.Stemming();
+
+            //3. Tokenization
             this._context.Tokenize();
 
-            //3. Text Cleaning
+            //4. Text Cleaning
             this._context.Clean();
-
-            //4. Stemming
-            this._context.Stemming();
 
             //5. Lemmitizing
             this._context.Lemmatize();

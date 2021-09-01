@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,7 +24,9 @@ namespace discovery.Models
 
         //Analyzing method (Conventional = 1, AI Based = 2)
         public int method { get; set; }
-        public int userID { get; set; }
-        public user user { get; set; }
+
+        [ForeignKey("ownerID")]
+        public IdentityUser owner { get; set; }
+        public string ownerID { get; set; }
     }
 }

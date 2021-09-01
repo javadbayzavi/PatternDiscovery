@@ -15,7 +15,14 @@ namespace discovery.Library.analyzer
         }
         public override void Submit()
         {
-            this.GetContext().SaveChanges();
+            try
+            {
+                this.GetContext().SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

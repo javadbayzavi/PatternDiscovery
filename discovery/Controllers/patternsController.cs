@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using discovery.Library.Core;
+using discovery.Library.identity;
 using discovery.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,9 @@ namespace discovery.Controllers
         {
             this.setPageTitle("Index");
 
-            var res = this.ormProxy.patterns.Include(a => a.category).Select(item =>
+            var res = this.ormProxy.patterns.Include(a => a.category)
+                .Where(sc => sc.category.ownerID == User.GetUserId())
+                .Select(item =>
                 new patternsviewmodel()
 
                 {
@@ -42,7 +45,7 @@ namespace discovery.Controllers
             this.setPageTitle("Create");
 
             //Load category models from a hook method
-            ViewBag.category = new SelectList(this.ormProxy.categories, "ID", "category");
+            ViewBag.category = new SelectList(this.ormProxy.categories.Where(sc => sc.ownerID == User.GetUserId()), "ID", "category");
             return View();
         }
 
@@ -70,7 +73,7 @@ namespace discovery.Controllers
 
             var item = this.ormProxy.patterns.First(a => a.ID == id);
             //Load category models from a hook method
-            ViewBag.category = new SelectList(this.ormProxy.categories, "ID", "category");
+            ViewBag.category = new SelectList(this.ormProxy.categories.Where(sc => sc.ownerID == User.GetUserId()), "ID", "category");
             return View(item);
         }
 
@@ -115,11 +118,6 @@ namespace discovery.Controllers
             return false;
         }
 
-        //Hook method for authentication cheking 
-        public override bool needAuthentication()
-        {
-            return true;
-        }
         //template method for setting the title of each page
         public override void setPageTitle(string actionRequester)
         {

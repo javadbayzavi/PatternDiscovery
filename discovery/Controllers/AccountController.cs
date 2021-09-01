@@ -1,6 +1,8 @@
-﻿using discovery.Library.identity;
+﻿using discovery.Library.Core;
+using discovery.Library.identity;
 using discovery.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace discovery.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
         public readonly UserManager<IdentityUser> _userManager;
         public readonly SignInManager<IdentityUser> _signInManager;
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signinManager)
+        public AccountController(IHttpContextAccessor httpContextAccessor,UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signinManager): base(httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signinManager;
@@ -23,6 +25,7 @@ namespace discovery.Controllers
         [AllowAnonymous]
         public IActionResult Register()
         {
+            this.setPageTitle("Register");
             return View();
         }
 
@@ -69,6 +72,7 @@ namespace discovery.Controllers
         [AllowAnonymous]
         public IActionResult Login()
         {
+            this.setPageTitle("Login");
             return View();
         }
 
@@ -95,7 +99,38 @@ namespace discovery.Controllers
 
         public IActionResult Profile()
         {
+            this.setPageTitle("Profile");
             return View();
         }
+
+        public override bool needScenario()
+        {
+            return false;
+        }
+
+        //template method for setting the title of each page
+        public override void setPageTitle(string actionRequester)
+        {
+            string _pageTitle = "";
+
+            switch (actionRequester)
+            {
+                case "Register":
+                    _pageTitle = "Register new account";
+                    break;
+                case "Login":
+                    _pageTitle = "Login";
+                    break;
+                case "Profile":
+                    _pageTitle = "Profile";
+                    break;
+                default:
+                    _pageTitle = "Login";
+                    break;
+            }
+
+            ViewBag.Title = _pageTitle;
+        }
+
     }
 }

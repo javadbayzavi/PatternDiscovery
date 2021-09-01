@@ -31,6 +31,7 @@
     ".NETCoreApp,Version=v3.1": {
       "discovery/1.0.0": {
         "dependencies": {
+          "Annytab.Stemmer": "1.2.4",
           "HtmlAgilityPack": "1.11.36",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "3.1.15",
@@ -306,6 +307,17 @@
         },
         "compile": {
           "discovery.dll": {}
+        }
+      },
+      "Annytab.Stemmer/1.2.4": {
+        "runtime": {
+          "lib/netstandard2.0/Annytab.Stemmer.dll": {
+            "assemblyVersion": "1.2.4.0",
+            "fileVersion": "1.2.4.0"
+          }
+        },
+        "compile": {
+          "lib/netstandard2.0/Annytab.Stemmer.dll": {}
         }
       },
       "HtmlAgilityPack/1.11.36": {
@@ -4238,6 +4250,13 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "Annytab.Stemmer/1.2.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-u9YVsYuLdBfnZzPa1uuvlkDlIHesXdJmuaAl+w8VNqUjOXue7MltaBQUt9ky/v1NszJpc7L1cQZAPNWGSlTe3g==",
+      "path": "annytab.stemmer/1.2.4",
+      "hashPath": "annytab.stemmer.1.2.4.nupkg.sha512"
     },
     "HtmlAgilityPack/1.11.36": {
       "type": "package",

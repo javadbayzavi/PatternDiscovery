@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace discovery.Library.Core
 {
-    public abstract class BaseController : Controller, IAuthenticable, IScenarioable
+    public abstract class BaseController : Controller, IScenarioable
     {
         private int _currentscenario;
         private int _currentuser;
@@ -54,43 +54,12 @@ namespace discovery.Library.Core
             }
         }
 
-        //Template Method for cheking user and scenario integrity
-        protected void integritycheking()
-        {
-            //    //if(needAuthentication())
-            //    //{
-            //    //In case of need for authorized access to page and the user isn't authenticated, user be redirected to login page
-            //    //    if(this.currentUser < 1)
-            //    //    {
-            //    //        //return RedirectToActionPermanent("Login", "user");
-            //    //    }
-            //    //}
-            //    if (needScenario())
-            //    {
-            //        //In case of need for scenario selection and the user did not selected, user be redirected to scenario page
-            //        if (this.currentScenario < 1)
-            //            //RedirectToActionPermanent("Index", "scenario");
-            //            return RedirectToAction("Index","scenario");
-
-            //    }
-
-            //    if (this.ControllerContext.RouteData == null)
-            //        return RedirectToAction(nameof(Index));
-            //    else
-            //    {
-            //        string actionName = (this.ControllerContext.RouteData == null || this.ControllerContext.RouteData.Values["action"] == null)? "Home" : this.ControllerContext.RouteData.Values["action"].ToString();
-
-            //        return RedirectToAction(actionName);
-            //    }
-
-        }
-
         public BaseController(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
             this._dbproxy = new discoveryContext();
-            this.integritycheking();
         }
+
         private discoveryContext _dbproxy;
         public discoveryContext ormProxy
         {
@@ -107,8 +76,6 @@ namespace discovery.Library.Core
 
         public abstract bool needScenario();
 
-
-        public abstract bool needAuthentication();
 
         public abstract void setPageTitle(string actionRequester);
 

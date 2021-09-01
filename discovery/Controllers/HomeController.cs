@@ -41,11 +41,6 @@ namespace discovery
             return false;
         }
 
-        //Hook method for authentication cheking 
-        public override bool needAuthentication()
-        {
-            return true;
-        }
         //template method for setting the title of each page
         public override void setPageTitle(string actionRequester)
         {

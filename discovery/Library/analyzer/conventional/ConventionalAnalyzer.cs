@@ -10,7 +10,7 @@ namespace discovery.Library.analyzer
     //Concrete analyzer which is using database engine to do anaylzing process
     public class ConventionalAnalyzer : Analyzer
     {
-        public ConventionalAnalyzer(ISubmitter submitter) : base(submitter)
+        public ConventionalAnalyzer(ISubmitter submitter, int scenario) : base(submitter,scenario)
         {
         }
 
@@ -57,6 +57,8 @@ namespace discovery.Library.analyzer
             //Do Conventional text analyze on database engine
             this.results = context.dataset.Where(a =>
             a.body.Contains(pattern.title.ToLower()) == true
+            &&
+            a.scenarioid == this._currentscenario
             ).Select(item => new Models.result
             {
                 count = Regex.Matches(item.body, pattern.title.ToLower(),RegexOptions.IgnoreCase).Count,

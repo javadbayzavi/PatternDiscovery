@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using discovery.Library.Core;
+using discovery.Library.identity;
 using discovery.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,7 @@ namespace discovery.Controllers
         {
             this.setPageTitle("Index");
 
-            var res = this.ormProxy.categories;
+            var res = this.ormProxy.categories.Where(sc => sc.ownerID == User.GetUserId());
             return View(res);
         }
 
@@ -41,6 +42,8 @@ namespace discovery.Controllers
         {
             try
             {
+                collection.ownerID = User.GetUserId();
+
                 this.ormProxy.categories.Add(collection);
                 this.ormProxy.SaveChanges();
                 return RedirectToAction(nameof(Index));
@@ -102,11 +105,6 @@ namespace discovery.Controllers
             return false;
         }
 
-        //Hook method for authentication cheking 
-        public override bool needAuthentication()
-        {
-            return true;
-        }
         //template method for setting the title of each page
         public override void setPageTitle(string actionRequester)
         {

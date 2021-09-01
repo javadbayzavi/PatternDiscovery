@@ -1,23 +1,23 @@
 ﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @{ 
-        var pageTitle = (ViewBag.Title != null) ? ViewBag.Title : "";
-    }
+    @{ var pageTitle = (ViewBag.Title != null) ? ViewBag.Title : ""; }
     <title>
-        Pattern Discovery - @(pageTitle) 
+        Pattern Discovery - @(pageTitle)
     </title>
 
-        <!-- Google Font: Source Sans Pro -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="~/scripts/plugins/fontawesome-free/css/all.min.css">
-        <!-- Theme style -->
-        <link rel="stylesheet" href="~/scripts/dist/css/adminlte.min.css">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/scripts/plugins/fontawesome-free/css/all.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/scripts/dist/css/adminlte.min.css">
 </head>
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -103,7 +103,7 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
-    with font-awesome or any other icon font library -->
+                        with font-awesome or any other icon font library -->
                         <li class="nav-item">
                             <a href="~/Home" class="nav-link">
                                 <i class="nav-icon fas fa-home"></i>
@@ -228,6 +228,48 @@
                                 </li>
                             </ul>
                         </li>
+                    @if ((AuthorizationService.AuthorizeAsync(User, "Permissions.Users.Create")).Result.Succeeded)
+                    {
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>
+                                    User Management
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="~/Users" class="nav-link">
+                                        <p>
+                                            Users
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/Roles" class="nav-link">
+                                        <p>
+                                            Roles
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/UserRoles" class="nav-link">
+                                        <p>
+                                            User roles
+                                        </p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="~/Permission" class="nav-link">
+                                        <p>
+                                            Permissions
+                                        </p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -243,8 +285,7 @@
                     <div class="row mb-2">
                         <div class="col-sm-6">
                             <h1>
-                                @if (@ViewBag.Title != null)
-                                    @(ViewBag.Title)
+                                @if (@ViewBag.Title != null)@(ViewBag.Title)
                             </h1>
                         </div>
                         <div class="col-sm-6">
@@ -264,20 +305,17 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    @{ 
-                        string msg = Context.Session.GetString(discovery.Library.Core.Keys._MSG);
-                    }
-                    @if( msg != null && msg != "")
+                    @{ string msg = Context.Session.GetString(discovery.Library.Core.Keys._MSG); }
+                    @if (msg != null && msg != "")
                     {
                         //Reset message after presentation
                         Context.Session.SetString(discovery.Library.Core.Keys._MSG, "");
-                        <div class="alert alert-info alert-dismissible fade show" role="alert">
-                            <strong>Text Miner</strong> @(msg).
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    }
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <strong>Text Miner</strong> @(msg).
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>}
                     <div class="row">
                         <div class="col-12">
                             @RenderBody()

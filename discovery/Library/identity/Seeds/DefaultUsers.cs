@@ -45,15 +45,30 @@ namespace discovery.Library.identity.Seeds
                     await userManager.AddToRoleAsync(defaultUser, Roles.Admin.ToString());
                     await userManager.AddToRoleAsync(defaultUser, Roles.SuperAdmin.ToString());
                 }
-                await roleManager.SeedClaimsForSuperAdmin();
             }
+            await roleManager.SeedClaimsForSuperAdmin();
         }
         private async static Task SeedClaimsForSuperAdmin(this RoleManager<IdentityRole> roleManager)
         {
-            var adminRole = await roleManager.FindByNameAsync("SuperAdmin");
-            await roleManager.AddPermissionClaim(adminRole, "scenario");
-            await roleManager.AddPermissionClaim(adminRole, "dataset");
-            await roleManager.AddPermissionClaim(adminRole, "patterns");
+            try
+            {
+                var adminRole = await roleManager.FindByNameAsync("SuperAdmin");
+                await roleManager.AddPermissionClaim(adminRole, "scenario");
+                await roleManager.AddPermissionClaim(adminRole, "dataset");
+                await roleManager.AddPermissionClaim(adminRole, "patterns");
+                await roleManager.AddPermissionClaim(adminRole, "result");
+                await roleManager.AddPermissionClaim(adminRole, "analyze");
+                await roleManager.AddPermissionClaim(adminRole, "import");
+                await roleManager.AddPermissionClaim(adminRole, "categories");
+                await roleManager.AddPermissionClaim(adminRole, "Users");
+                await roleManager.AddPermissionClaim(adminRole, "UserRoles");
+                await roleManager.AddPermissionClaim(adminRole, "Roles");
+                await roleManager.AddPermissionClaim(adminRole, "Permission");
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
         public static async Task AddPermissionClaim(this RoleManager<IdentityRole> roleManager, IdentityRole role, string module)
         {

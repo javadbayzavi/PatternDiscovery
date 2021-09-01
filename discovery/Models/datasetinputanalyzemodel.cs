@@ -12,14 +12,8 @@ namespace discovery.Models
     //This model hold the information about mail document
     public class datasetinputanalyzemodel
     {
-        //public int ID { get; set; }
-        
-        ////Title of the mail document
-        //[LoadColumn(0)]
-        //public string subject { get; set; }
-
-        //Body of the mail document
+        public int ID { get; set; }
         public string body { get; set; }
-
+        public string lemmatizedbody { get; set; }
     }
 }

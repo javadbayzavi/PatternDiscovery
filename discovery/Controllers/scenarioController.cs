@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using discovery.Library.Core;
 using discovery.Library.file;
@@ -8,16 +9,20 @@ using discovery.Library.zip;
 using discovery.Models;
 using HtmlAgilityPack;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using discovery.Library.identity;
 
 namespace discovery.Controllers
 {
     public partial class scenarioController : BaseController
     {
-        public scenarioController(IHttpContextAccessor httpContextAccessor): base(httpContextAccessor)
+        public readonly UserManager<IdentityUser> _userManager;
+        public scenarioController(IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager): base(httpContextAccessor)
         {
+            this._userManager = userManager;
         }
         // GET: scenario
         public ActionResult Index()
@@ -25,7 +30,7 @@ namespace discovery.Controllers
             this.setPageTitle("Index");
 
             ViewBag.currentScenario = this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO);
-            var scenarios = this.ormProxy.scenario.Select(item => new scenarioviewmodel()
+            var scenarios = this.ormProxy.scenario.Where(sc => sc.ownerID == User.GetUserId()).Select(item => new scenarioviewmodel()
             {
                 createddate = item.createddate,
                 method = item.method.ToString(),
@@ -51,7 +56,7 @@ namespace discovery.Controllers
         [HttpPost]
         [ActionName("Reset")]
         [ValidateAntiForgeryToken]
-        public ActionResult ResetConfirmed(int id)
+        public async Task<IActionResult> ResetConfirmed(int id)
         {
             var results = this.ormProxy.result.Where(a => a.scenarioid == id);
             var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == id);
@@ -76,7 +81,7 @@ namespace discovery.Controllers
             scenario.status = (int)scenariostatus.Created;
             this.ormProxy.scenario.Update(scenario);
 
-            this.ormProxy.SaveChangesAsync();
+            await this.ormProxy.SaveChangesAsync();
             this._session.SetString(Keys._MSG,"Scenario has successfully been reset");
             return RedirectToAction(nameof(Index));
         }
@@ -117,6 +122,7 @@ namespace discovery.Controllers
             {
                 //Add controlling information to scenario
                 collection.datasource = "";
+                collection.ownerID = User.GetUserId();
                 collection.status = (int)scenariostatus.Created;
                 collection.sversion = System.Guid.NewGuid();
                 collection.createddate = DateTime.Now;
@@ -188,7 +194,7 @@ namespace discovery.Controllers
         [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
@@ -209,7 +215,7 @@ namespace discovery.Controllers
                 this.ormProxy.dataset.RemoveRange(datasets);
                 this.ormProxy.result.RemoveRange(results);
 
-                this.ormProxy.SaveChangesAsync();
+                await this .ormProxy.SaveChangesAsync();
                 this._session.SetString(Keys._MSG, "Scenario has successfully been deleted");
 
                 var item = this.ormProxy.scenario.FirstOrDefault(a => a.ID == id);
@@ -255,11 +261,6 @@ namespace discovery.Controllers
             return false;
         }
 
-        //Hook method for authentication cheking 
-        public override bool needAuthentication()
-        {
-            return true;
-        }
         //template method for setting the title of each page
         public override void setPageTitle(string actionRequester)
         {
