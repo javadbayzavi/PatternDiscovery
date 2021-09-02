@@ -1,6 +1,8 @@
-﻿using discovery.Library.file;
+﻿using discovery.Library.Core;
+using discovery.Library.file;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,8 +27,18 @@ namespace discovery.Library.text
             //Remove document header and concate the remaining content into the body part of data
             //this.filecontent = this.filecontent.Where((source, index) => index > 6).ToArray();
             this.data.body = String.Join("\r\n", this.filecontent.Where((source, index) => index > 6).ToArray());
-            
-            
+        }
+        public override void signAsImported()
+        {
+            if (File.Exists(this.filename))
+            {
+                var file = new FileInfo(this.filename);
+                File.Move(this.filename, file.DirectoryName + "\\" + Keys._IMPORTTED + file.Name);
+            }
+        }
+        public override bool isImported()
+        {
+            return this.filename.Contains(Keys._IMPORTTED);
         }
 
         //Template method implementation for zip file

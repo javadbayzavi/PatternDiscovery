@@ -32,7 +32,7 @@ namespace discovery.Controllers
         {
             this.setPageTitle("Index");
 
-            ViewBag.currentScenario = (this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == null || this.HttpContext.Session.GetString(Keys._CURRENTSCENARIO) == "");
+            ViewBag.currentScenario = (this._session.GetString(Keys._CURRENTSCENARIO) == null || this._session.GetString(Keys._CURRENTSCENARIO) == "");
             if ((bool)ViewBag.currentScenario)
                 return View("List", new List<datasetviewmodel>());
 
@@ -70,6 +70,7 @@ namespace discovery.Controllers
                 collection.scenarioid = Convert.ToInt32(this.currentScenario);
                 this.ormProxy.dataset.Add(collection);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Dataset Successfully Created");
                 return RedirectToAction("List");
             }
             catch
@@ -96,6 +97,7 @@ namespace discovery.Controllers
             {
                 this.ormProxy.dataset.Update(collection);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Dataset Successfully Updated");
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -122,6 +124,7 @@ namespace discovery.Controllers
                 var item = this.ormProxy.dataset.FirstOrDefault(a => a.ID == id);
                 this.ormProxy.dataset.Remove(item);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Dataset Successfully Deleted");
                 return RedirectToAction(nameof(Index));
             }
             catch

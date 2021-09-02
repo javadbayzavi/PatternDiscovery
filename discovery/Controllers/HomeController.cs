@@ -35,6 +35,12 @@ namespace discovery
 
             return View(this.getCurrentScenario());
         }
+
+        [AllowAnonymous]
+        public IActionResult Contact()
+        {
+            return View();
+        }
         //Hook method for scenrio cheking
         public override bool needScenario()
         {

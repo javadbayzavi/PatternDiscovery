@@ -58,6 +58,7 @@ namespace discovery.Library.Core
         {
             _httpContextAccessor = httpContextAccessor;
             this._dbproxy = new discoveryContext();
+            this._dbemergencyproxy = new emergncyDbContext();
         }
 
         private discoveryContext _dbproxy;
@@ -68,6 +69,16 @@ namespace discovery.Library.Core
                 return _dbproxy;
             }
         }
+
+        private emergncyDbContext _dbemergencyproxy;
+        public emergncyDbContext ormEmergencyProxy
+        {
+            get
+            {
+                return _dbemergencyproxy;
+            }
+        }
+
         protected scenario getCurrentScenario()
         {
             var item = this.ormProxy.scenario.Find(this.currentScenario);

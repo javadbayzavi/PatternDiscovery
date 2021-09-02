@@ -15,7 +15,7 @@ namespace discovery.Library.file
         {
             this._fileaddress = address;
         }
-        public override IReadable createData()
+        public override IReadable createLocalData()
         {
             if (this._fileaddress.Length > 0)
             {

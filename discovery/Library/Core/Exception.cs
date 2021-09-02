@@ -5,9 +5,10 @@ using System.Threading.Tasks;
 
 namespace discovery.Library.Core
 {
-    public abstract class datafactory
+    public enum ExceptionType
     {
-        //Factory method for raw data document
-        public abstract IReadable createLocalData();
+        Eror = 1,
+        Warn,
+        Info
     }
 }

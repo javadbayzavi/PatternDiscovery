@@ -65,6 +65,11 @@ namespace discovery.Controllers
         public async Task<IActionResult> Logout()
         {
             await this._signInManager.SignOutAsync();
+
+            //Reset active scenario
+            HttpContext.Session.SetString(Keys._CURRENTSCENARIO, "0");
+            HttpContext.Session.SetString(Keys._MSG, "");
+
             return RedirectToAction(nameof(Index),"Home");
         }
 

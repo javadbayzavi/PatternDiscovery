@@ -38,5 +38,17 @@ namespace discovery.Library.Core
         public const string _DATEREGEXPRESSION = "(?:\\d|\\d{2}) \\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May?|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?) (?:19[7-9]\\d|2\\d{3})(?=\\D|$)";
         public const string _MONTHREGEXPRESSION = "\\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May?|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
 
+        public const string _TXT = ".txt";
+        public const string _SCENARIORESET = "Reset";
+        public const string _SCENARIOCREATE= "Create";
+        public const string _SCENARIODELETED = "Delete";
+        public const string _SCENARIODELETE = "Scenario has successfully been deleted";
+        public const string _SCENARIORESETT = "Scenario has successfully been reset";
+        public const string _SCENARIOSTOP = "Scenario has successfully Stopped";
+        public const string _SCENARIOSTART = "Scneario has successfully Started";
+        public const string _SCENARIODELETETITLE = "Delete Scenario";
+        public const string _SCENARIORESETTITLE = "Reset Scenario";
+        public const string _SCENARIODETAILSTITLE = "View Scenario Details";
+        public const string _SCENARIOEDITTITLE = "Edit Scenario";
     }
 }

@@ -11,11 +11,14 @@ namespace discovery.Library.Core
         protected dataset data;
         public void Read(ref dataset datast)
         {
-            this.data = datast;
-            this.ReadDocument();
-            this.NormalizeDataSet();
+                this.data = datast;
+                this.ReadDocument();
+                this.NormalizeDataSet();
+                this.signAsImported();
         }
         public abstract void NormalizeDataSet();
         public abstract void ReadDocument();
+        public abstract void signAsImported();
+        public abstract bool isImported();
     }
 }

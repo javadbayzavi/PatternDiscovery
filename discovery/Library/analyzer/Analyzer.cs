@@ -10,7 +10,9 @@ namespace discovery.Library.analyzer
     {
         protected ISubmitter _submitterEngine;
         protected object _pattern;
-        protected IQueryable<result> results;
+
+        protected List<result> results = new List<result>();
+
         protected int _currentscenario;
         //This property hold the strategist of the analyzer
         protected IAnalyzerExecutor _executorEngine;

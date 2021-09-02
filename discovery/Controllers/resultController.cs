@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using discovery.Library.Core;
+using discovery.Library.identity;
 using discovery.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -57,8 +58,8 @@ namespace discovery.Controllers
         {
             this.setPageTitle("charts");
 
-            ViewBag.rnkforcategories = new SelectList(this.ormProxy.categories, "ID", "category");
-            ViewBag.categories = new SelectList(this.ormProxy.categories, "ID", "category");
+            ViewBag.rnkforcategories = new SelectList(this.ormProxy.categories.Where(a => a.ownerID == User.GetUserId()), "ID", "category");
+            ViewBag.categories = new SelectList(this.ormProxy.categories.Where(a => a.ownerID == User.GetUserId()), "ID", "category");
 
             //Scenario Checking
             ViewBag.currentScenario = false;

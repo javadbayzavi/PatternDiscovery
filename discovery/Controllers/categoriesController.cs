@@ -46,6 +46,7 @@ namespace discovery.Controllers
 
                 this.ormProxy.categories.Add(collection);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Category Successfully Created");
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -70,8 +71,10 @@ namespace discovery.Controllers
         {
             try
             {
+                collection.ownerID = User.GetUserId();
                 this.ormProxy.categories.Update(collection);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Category Successfully Updated");
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -90,12 +93,12 @@ namespace discovery.Controllers
                 var item = this.ormProxy.categories.FirstOrDefault(a => a.ID == id);
                 this.ormProxy.categories.Remove(item);
                 this.ormProxy.SaveChanges();
-                this._session.SetString(Keys._MSG, "Category Successfully Deleted");
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Category Successfully Deleted");
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                this._session.SetString(Keys._MSG, "Delete category Failed");
+                this._session.SetString(Keys._MSG, ExceptionType.Eror + "Delete category Failed");
                 return View(nameof(Index));
             }
         }

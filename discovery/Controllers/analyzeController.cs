@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using static discovery.Models.patternsviewmodel;
 using discovery.Library.identity;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace discovery.Controllers
 {
@@ -71,8 +73,12 @@ namespace discovery.Controllers
             var sid = Convert.ToInt32(this._session.GetString(Keys._CURRENTSCENARIO));
             try
             {
-                using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                TransactionOptions options = new TransactionOptions();
+                options.Timeout = TimeSpan.MaxValue;
+                options.IsolationLevel = IsolationLevel.ReadCommitted;
+                using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required,options))
                 {
+
                     //Delete all previous
                     foreach (var resultItem in this.ormProxy.result.Where(a => a.scenarioid == sid))
                         this.ormProxy.Remove(resultItem);
@@ -84,7 +90,7 @@ namespace discovery.Controllers
                         var scenarioMethod = this.getCurrentScenario().method.ToString();
 
                         //Create analyzing interface throguh factory method and inject dbcontext as a submitter to it
-                        Analyzer analyzer = AnalyzerFactory.createAnalyzer(scenarioMethod,this.ormProxy,this.currentScenario);
+                        Analyzer analyzer = AnalyzerFactory.createAnalyzer(scenarioMethod, this.ormProxy,this.currentScenario);
 
                         //Runing the whole analyzing process through Async process
 
@@ -93,10 +99,10 @@ namespace discovery.Controllers
                             //Using strategy pattern to change the default Analyzing function of the analyzer to conventional execution
                             analyzer.Analyze(pattern.ToString(), new ConventionalExecutor(analyzer));
                         }
-                        catch (Exception ex)
+                        catch (System.Exception ex)
                         {
-                            this._session.SetString(Keys._MSG, "Analyzing process has failed for. Please restart the process");
-                            return RedirectToAction("conventional");
+                            this._session.SetString(Keys._MSG, ExceptionType.Eror + "Analyzing process has failed for. Please restart the process");
+                            return base.RedirectToAction("conventional");
                         }
                     }
                     //Update the current scenario status
@@ -110,14 +116,14 @@ namespace discovery.Controllers
                     transaction.Complete();
                 }
 
-                this._session.SetString(Keys._MSG, "Analyzing completed!");
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Analyzing completed!");
 
-                return RedirectToAction("Index",new { controller = "result" });
+                return base.RedirectToAction("Index",new { controller = "result" });
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                this._session.SetString(Keys._MSG, "Analyzing process internal error");
-                return RedirectToAction("conventional");
+                this._session.SetString(Keys._MSG, ExceptionType.Eror + "Analyzing process internal error");
+                return base.RedirectToAction("conventional");
             }
         }
 
@@ -149,8 +155,9 @@ namespace discovery.Controllers
             var sid = Convert.ToInt32(this._session.GetString(Keys._CURRENTSCENARIO));
             try
             {
-                using (TransactionScope transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                using (var transaction = this.ormProxy.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
                 {
+
                     //Delete all previous
                     foreach (var resultItem in this.ormProxy.result.Where(a => a.scenarioid == sid))
                         this.ormProxy.Remove(resultItem);
@@ -176,10 +183,10 @@ namespace discovery.Controllers
                         //Runing the whole analyzing process through Async process
                         analyzer.Analyze(inputPattern);
                     }
-                    catch (Exception ex)
+                    catch (System.Exception ex)
                     {
-                        this._session.SetString(Keys._MSG, "Analyzing process has failed for. Please restart the process");
-                        return RedirectToAction("ai");
+                        this._session.SetString(Keys._MSG, ExceptionType.Eror + "Analyzing process has failed for. Please restart the process");
+                        return base.RedirectToAction("ai");
                     }
                     //Update the current scenario status
                     var scen = getCurrentScenario();
@@ -189,17 +196,17 @@ namespace discovery.Controllers
 
                     this.ormProxy.SaveChanges();
 
-                    transaction.Complete();
+                    transaction.Commit();
                 }
 
-                this._session.SetString(Keys._MSG, "Analyzing completed!");
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Analyzing completed!");
 
-                return RedirectToAction("Index", new { controller = "result" });
+                return base.RedirectToAction("Index", new { controller = "result" });
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
-                this._session.SetString(Keys._MSG, "Analyzing process internal error");
-                return RedirectToAction("ai");
+                this._session.SetString(Keys._MSG, ExceptionType.Eror + "Analyzing process internal error");
+                return base.RedirectToAction("ai");
             }
         }
         //Hook method for scenrio cheking

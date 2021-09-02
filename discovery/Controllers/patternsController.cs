@@ -58,6 +58,7 @@ namespace discovery.Controllers
             {
                 this.ormProxy.patterns.Add(collection);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Pattern Successfully Created");
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -86,6 +87,7 @@ namespace discovery.Controllers
             {
                 this.ormProxy.patterns.Update(collection);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Pattern Successfully Updated");
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -103,12 +105,12 @@ namespace discovery.Controllers
                 var item = this.ormProxy.patterns.FirstOrDefault(a => a.ID == id);
                 this.ormProxy.patterns.Remove(item);
                 this.ormProxy.SaveChanges();
-                this._session.SetString(Keys._MSG, "Pattern Successfully Deleted");
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Pattern Successfully Deleted");
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
-                this._session.SetString(Keys._MSG, "Delete pattern Failed");
+                this._session.SetString(Keys._MSG, ExceptionType.Eror + "Delete pattern Failed");
                 return View(nameof(Index));
             }
         }

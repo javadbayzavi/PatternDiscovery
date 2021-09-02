@@ -32,6 +32,7 @@
       "discovery/1.0.0": {
         "dependencies": {
           "Annytab.Stemmer": "1.2.4",
+          "EAGetMail": "5.2.2.2",
           "HtmlAgilityPack": "1.11.36",
           "Microsoft.AspNetCore.Identity": "2.2.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "3.1.15",
@@ -318,6 +319,17 @@
         },
         "compile": {
           "lib/netstandard2.0/Annytab.Stemmer.dll": {}
+        }
+      },
+      "EAGetMail/5.2.2.2": {
+        "runtime": {
+          "lib/netcoreapp2.1/EAGetMail.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        },
+        "compile": {
+          "lib/netcoreapp2.1/EAGetMail.dll": {}
         }
       },
       "HtmlAgilityPack/1.11.36": {
@@ -4257,6 +4269,13 @@
       "sha512": "sha512-u9YVsYuLdBfnZzPa1uuvlkDlIHesXdJmuaAl+w8VNqUjOXue7MltaBQUt9ky/v1NszJpc7L1cQZAPNWGSlTe3g==",
       "path": "annytab.stemmer/1.2.4",
       "hashPath": "annytab.stemmer.1.2.4.nupkg.sha512"
+    },
+    "EAGetMail/5.2.2.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Yp8jUvrzqOQOxdzitwzLHmQbpm9O+o3KxV127PDkKtut/2DYuwey+PkiSCQXj63wOHL+2IhNvHo06tdBbJqBPw==",
+      "path": "eagetmail/5.2.2.2",
+      "hashPath": "eagetmail.5.2.2.2.nupkg.sha512"
     },
     "HtmlAgilityPack/1.11.36": {
       "type": "package",

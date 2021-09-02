@@ -61,7 +61,7 @@ namespace discovery.Library.Core
                     WebClient wbc = new WebClient();
                     wbc.DownloadFileAsync(new Uri(item.fileurl), Keys._TEMPDIRECTORY + item.filename);
                 }
-                catch (Exception ex)
+                catch (System.Exception ex)
                 {
                     continue;
                 }
@@ -94,7 +94,7 @@ namespace discovery.Library.Core
                     }
                     counter++;
                 }
-                catch (Exception ex)
+                catch (System.Exception ex)
                 {
                     continue;
                 }

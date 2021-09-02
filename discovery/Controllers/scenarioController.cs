@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using discovery.Library.identity;
+using System.Transactions;
 
 namespace discovery.Controllers
 {
@@ -44,7 +45,7 @@ namespace discovery.Controllers
         }
         public ActionResult Reset(int id)
         {
-            this.setPageTitle("Reset");
+            this.setPageTitle(Keys._SCENARIORESET);
 
             ViewBag.hadData = (this.ormProxy.dataset.Count(a => a.scenarioid == this.currentScenario) > 0);
             ViewBag.hasFiles = (System.IO.Directory.GetFiles(Keys._SCENARIODIRECTORY).Count(a => a.Contains(this.ormProxy.scenario.Where(bb => bb.ID == id).First().sversion.ToString())) > 0);
@@ -54,35 +55,45 @@ namespace discovery.Controllers
         }
         
         [HttpPost]
-        [ActionName("Reset")]
+        [ActionName(Keys._SCENARIORESET)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetConfirmed(int id)
         {
             var results = this.ormProxy.result.Where(a => a.scenarioid == id);
             var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == id);
 
-            if (System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt"))
-                System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt");
+            TransactionOptions options = new TransactionOptions();
+            options.Timeout = TimeSpan.MaxValue;
+            options.IsolationLevel = IsolationLevel.ReadCommitted;
 
-            string filename = GetScenario(id).sversion.ToString();
-            var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(filename));
-
-            foreach (var itt in files)
+            using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
             {
-                if (System.IO.File.Exists(itt))
-                    System.IO.File.Delete(itt);
+
+                if (System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + Keys._TXT))
+                    System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + Keys._TXT);
+
+                string filename = GetScenario(id).sversion.ToString();
+                var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(filename));
+
+                foreach (var itt in files)
+                {
+                    if (System.IO.File.Exists(itt))
+                        System.IO.File.Delete(itt);
+                }
+
+                this.ormProxy.dataset.RemoveRange(datasets);
+                this.ormProxy.result.RemoveRange(results);
+                var scenario = this.GetScenario(id);
+
+                //Reset the status of the scenario
+                scenario.status = (int)scenariostatus.Created;
+                this.ormProxy.scenario.Update(scenario);
+
+                await this.ormProxy.SaveChangesAsync();
+                transaction.Complete();
             }
 
-            this.ormProxy.dataset.RemoveRange(datasets);
-            this.ormProxy.result.RemoveRange(results);
-            var scenario = this.GetScenario(id);
-
-            //Reset the status of the scenario
-            scenario.status = (int)scenariostatus.Created;
-            this.ormProxy.scenario.Update(scenario);
-
-            await this.ormProxy.SaveChangesAsync();
-            this._session.SetString(Keys._MSG,"Scenario has successfully been reset");
+            this._session.SetString(Keys._MSG,ExceptionType.Info + Keys._SCENARIORESETT);
             return RedirectToAction(nameof(Index));
         }
 
@@ -93,19 +104,19 @@ namespace discovery.Controllers
             {
                 //Current scenario must be stopped
                 this._session.SetString(Keys._CURRENTSCENARIO, "");
-                this._session.SetString(Keys._MSG, "Scneario has successfully Stopped");
+                this._session.SetString(Keys._MSG, ExceptionType.Info + Keys._SCENARIOSTOP);
             }
             else
             {
                 this._session.SetString(Keys._CURRENTSCENARIO, id.ToString());
-                this._session.SetString(Keys._MSG, "Scneario has successfully Started");
+                this._session.SetString(Keys._MSG, ExceptionType.Info + Keys._SCENARIOSTART);
             }
             return RedirectToAction("Index");
         }
         // GET: scenario/Create
         public ActionResult Create()
         {
-            this.setPageTitle("Create");
+            this.setPageTitle(Keys._SCENARIOCREATE);
 
             //Load necessary dropdowns
             ViewBag.sourcetype = new SelectList(scenarioviewmodel.getTypes(), "Value", "Text");            
@@ -129,6 +140,7 @@ namespace discovery.Controllers
 
                 this.ormProxy.scenario.Add(collection);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Scenario Successfully Created");
                 return RedirectToAction("Index");
             }
             catch
@@ -164,10 +176,12 @@ namespace discovery.Controllers
 
                 this.ormProxy.scenario.Update(item);
                 this.ormProxy.SaveChanges();
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Scenario Successfully Updated");
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Scenario Update Failed");
                 return View();
             }
         }
@@ -198,30 +212,41 @@ namespace discovery.Controllers
         {
             try
             {
-                var results = this.ormProxy.result.Where(a => a.scenarioid == id);
-                var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == id);
-                if(System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt"))
-                    System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + ".txt");
-
-                string filename = GetScenario(id).sversion.ToString();
-                var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(filename));
-
-                foreach (var itt in files)
+                TransactionOptions options = new TransactionOptions();
+                options.Timeout = TimeSpan.MaxValue;
+                options.IsolationLevel = IsolationLevel.ReadCommitted;
+                using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    if(System.IO.File.Exists(itt))
-                        System.IO.File.Delete(itt);
+
+                    var results = this.ormProxy.result.Where(a => a.scenarioid == id);
+                    var datasets = this.ormProxy.dataset.Where(a => a.scenarioid == id);
+
+                    if (System.IO.File.Exists(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + Keys._TXT))
+                        System.IO.File.Delete(Keys._SCENARIODIRECTORY + "/" + this.GetScenario(id).sversion.ToString() + Keys._TXT);
+
+                    string filename = GetScenario(id).sversion.ToString();
+
+                    var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(filename));
+
+                    foreach (var itt in files)
+                    {
+                        if (System.IO.File.Exists(itt))
+                            System.IO.File.Delete(itt);
+                    }
+
+                    this.ormProxy.dataset.RemoveRange(datasets);
+                    this.ormProxy.result.RemoveRange(results);
+
+                    await this.ormProxy.SaveChangesAsync();
+                    this._session.SetString(Keys._MSG, ExceptionType.Info + Keys._SCENARIODELETE);
+
+                    var item = this.ormProxy.scenario.FirstOrDefault(a => a.ID == id);
+                    this.ormProxy.scenario.Remove(item);
+                    this.ormProxy.SaveChanges();
+
+                    transaction.Complete();
+
                 }
-
-                this.ormProxy.dataset.RemoveRange(datasets);
-                this.ormProxy.result.RemoveRange(results);
-
-                await this .ormProxy.SaveChangesAsync();
-                this._session.SetString(Keys._MSG, "Scenario has successfully been deleted");
-
-                var item = this.ormProxy.scenario.FirstOrDefault(a => a.ID == id);
-                this.ormProxy.scenario.Remove(item);
-                this.ormProxy.SaveChanges();
-
                 //Check whether if current scenario is active. it must be stopped
                 var currentScenario = this._session.GetString(Keys._CURRENTSCENARIO);
                 if (currentScenario != null && currentScenario == id.ToString())
@@ -241,7 +266,7 @@ namespace discovery.Controllers
         // POST: scenario/Delete/5
         public ActionResult Delete(int id)
         {
-            this.setPageTitle("Delete");
+            this.setPageTitle(Keys._SCENARIODELETED);
 
             ViewBag.hadData = (this.ormProxy.dataset.Count(a => a.scenarioid == this.currentScenario) > 0);
             ViewBag.hasFiles = (System.IO.Directory.GetFiles(Keys._SCENARIODIRECTORY).Count(a => a.Contains(this.ormProxy.scenario.Where(bb => bb.ID == id).First().sversion.ToString())) > 0);
@@ -275,16 +300,16 @@ namespace discovery.Controllers
                     _pageTitle = "Create Scenario";
                     break;
                 case "Edit":
-                    _pageTitle = "Edit Scenario";
+                    _pageTitle = Keys._SCENARIOEDITTITLE;
                     break;
                 case "Delete":
-                    _pageTitle = "Delete Scenario";
+                    _pageTitle = Keys._SCENARIODELETETITLE;
                     break;
                 case "Reset":
-                    _pageTitle = "Reset Scenario";
+                    _pageTitle = Keys._SCENARIORESETTITLE;
                     break;
                 case "Details":
-                    _pageTitle = "View Scenario Details";
+                    _pageTitle = Keys._SCENARIODETAILSTITLE;
                     break;
                 default:
                     _pageTitle = "Scenario Management";

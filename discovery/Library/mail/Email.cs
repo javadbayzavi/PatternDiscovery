@@ -6,16 +6,11 @@ using System.Threading.Tasks;
 
 namespace discovery.Library.mail
 {
-    public class Email : rawdocument
+    public abstract class Email : rawdocument
     {
-        public override void NormalizeDataSet()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract override void NormalizeDataSet();
 
-        public override void ReadDocument()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract override void ReadDocument();
+
     }
 }

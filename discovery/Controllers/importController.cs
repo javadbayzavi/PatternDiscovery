@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Transactions;
 using discovery.Library.Core;
 using discovery.Library.file;
 using discovery.Library.zip;
@@ -77,21 +78,21 @@ namespace discovery.Controllers
                     this.ormProxy.scenario.Update(scen);
                     this.ormProxy.SaveChanges();
 
-                    this._session.SetString(Keys._MSG, "All Selected files have downloaded");
+                    this._session.SetString(Keys._MSG, ExceptionType.Info + "All Selected files have downloaded");
 
-                    return RedirectToAction(nameof(Index));
+                    return base.RedirectToAction(nameof(Index));
                 }
                 else
                 {
-                    this._session.SetString(Keys._MSG, "File donwload failed");
-                    return RedirectToAction("LoadRemoteFileList");
+                    this._session.SetString(Keys._MSG, ExceptionType.Eror + "File donwload failed");
+                    return base.RedirectToAction("LoadRemoteFileList");
                 }
             }
-            catch (Exception ex)
+            catch (System.Exception ex)
             {
 
-                this._session.SetString(Keys._MSG, "File download failed. Error:" + ex.Message);
-                return RedirectToAction("LoadRemoteFileList");
+                this._session.SetString(Keys._MSG, ExceptionType.Eror + "File download failed. Error:" + ex.Message);
+                return base.RedirectToAction("LoadRemoteFileList");
             }
         }
 
@@ -129,13 +130,13 @@ namespace discovery.Controllers
                             fileurl = a.fileurl
                         }
                     ).ToList();
-                this._session.SetString(Keys._REMOTEURL,url);
-                return View(files);
+                this._session.SetString(Keys._REMOTEURL, url);
+                return base.View(files);
             }
-            catch(Exception ex)
+            catch(System.Exception ex)
             {
-                this._session.SetString(Keys._MSG, "Loading file list has failed");
-                return View("LoadRemoteFileList");
+                this._session.SetString(Keys._MSG, ExceptionType.Eror + "Loading file list has failed");
+                return base.View("LoadRemoteFileList");
             }
         }
         public ActionResult ImportData()
@@ -145,8 +146,11 @@ namespace discovery.Controllers
             ViewBag.downlaoded = true;
             if (getCurrentScenario().status < (int) scenariostatus.Downloaded)
                 ViewBag.downlaoded = false;
+            
             //Number of files downloaded for this scenario
-            ViewBag.filenumbers = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Where(a => a.Contains(this.getCurrentScenario().sversion.ToString())).Count();
+            //TODO: this statement must check the file whether is importet or not
+            ViewBag.filenumbers = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY)
+                .Where(a => a.Contains(this.getCurrentScenario().sversion.ToString()) && a.Contains(Keys._IMPORTTED) == false).Count();
 
             return View();
         }
@@ -156,51 +160,70 @@ namespace discovery.Controllers
         // GET: import/ImportData/
         public async Task<IActionResult> ImportData(string version)
         {
-            //Check if the user want to import data for scenario that has no downloaded file
-
-            //Use factory method to create appropriate file document based on downloaded file in temp directory
-            var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY).Select(a =>
-                new filefactory(a).createData()
-            );
-
-            //temp list of extracted data from documents
-            var datasets = new List<dataset>();
-            foreach (var file in files)
+            try
             {
-                var item = new dataset();
-                //Read document content through template method
-                file.Read(ref item);
+                //Use factory method to create appropriate file document based on downloaded file in temp directory
+                var files = System.IO.Directory.GetFiles(Keys._TEMPDIRECTORY)
+                    .Where(a => a.Contains(this.getCurrentScenario().sversion.ToString()) && a.Contains(Keys._IMPORTTED) == false)
+                    .Select(a =>
+                         new filefactory(a).createLocalData()
+                    );
 
-                item.scenarioid = this.currentScenario;
-
-                datasets.Add(item);
-
-                //Check for memory overloads and dump the list into databse
-                if(new performancetuner().MemoryOveload(ref datasets))
+                TransactionOptions options = new TransactionOptions();
+                options.Timeout = TimeSpan.MaxValue;
+                options.IsolationLevel = IsolationLevel.ReadCommitted;
+                //Define transaction scope with support of aysnc function
+                using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled))
                 {
-                    //Dump data to database
+                    //temp list of extracted data from documents
+                    var datasets = new List<dataset>();
+                    foreach (var file in files)
+                    {
+                        var item = new dataset();
+                        //Read document content through template method
+                        file.Read(ref item);
+
+                        item.scenarioid = this.currentScenario;
+
+                        datasets.Add(item);
+
+                        //Check for memory overloads and dump the list into databse
+                        if (new performancetuner().MemoryOveload(ref datasets))
+                        {
+                            //Dump data to database
+                            this.ormEmergencyProxy.dataset.AddRange(datasets);
+                            
+                            await this.ormEmergencyProxy.SaveChangesAsync(); 
+                            //free dynamic memory
+                            datasets.Clear();
+                        }
+
+                    }
+
+                    //import remaining data into database
                     this.ormProxy.dataset.AddRange(datasets);
+
+                    //Update the current scenario status
+                    var scen = getCurrentScenario();
+
+                    //Set the status to downloaded
+                    scen.status = (int)scenariostatus.Importted;
+                    this.ormProxy.scenario.Update(scen);
+
                     await this.ormProxy.SaveChangesAsync();
-                    //free dynamic memory
-                    datasets.Clear();
+
+                    transaction.Complete();
                 }
+                this._session.SetString(Keys._MSG, ExceptionType.Info + "Data Import Successfully Done!");
+
+                return RedirectToAction(nameof(Index));
+
             }
-
-            //import remaining data into database
-            this.ormProxy.dataset.AddRange(datasets);
-
-            //Update the current scenario status
-            var scen = getCurrentScenario();
-
-            //Set the status to downloaded
-            scen.status = (int)scenariostatus.Importted;
-            this.ormProxy.scenario.Update(scen);
-
-            await this.ormProxy.SaveChangesAsync();
-
-            this._session.SetString(Keys._MSG, "Data Import Successfully Done!");
-
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                this._session.SetString(Keys._MSG, ExceptionType.Eror + "Data Import Failed!");
+                return RedirectToAction("ImportData");
+            }        
         }
 
         //Hook method for scenrio cheking

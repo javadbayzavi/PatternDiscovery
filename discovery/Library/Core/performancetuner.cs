@@ -43,7 +43,7 @@ namespace discovery.Library.Core
                     bf.Serialize(ms, obj);
                     ret = ms.Length;
                 }
-                catch (Exception ex) { }
+                catch (System.Exception ex) { }
             }
             return (ulong)ret;
         }
@@ -57,8 +57,8 @@ namespace discovery.Library.Core
 
             foreach (ManagementObject result in results)
             {
-                this.AvailableRam += (ulong)result["TotalVisibleMemorySize"];
-                this.InstalledRam += (ulong)result["FreePhysicalMemory"];
+                this.InstalledRam += (ulong)result["TotalVisibleMemorySize"];
+                this.AvailableRam += (ulong)result["FreePhysicalMemory"];
                 this.TotalVirtual += (ulong)result["TotalVirtualMemorySize"];
                 this.AvailableVirtual += (ulong)result["FreeVirtualMemory"];
             }

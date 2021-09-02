@@ -1,6 +1,9 @@
-﻿@using Microsoft.AspNetCore.Http
+﻿@using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.Authorization
+
 @inject IAuthorizationService AuthorizationService
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,7 +35,7 @@
                     <a href="~/Home" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="#" class="nav-link">Contact</a>
+                    <a href="~/Home/Contact" class="nav-link">Contact</a>
                 </li>
             </ul>
 
@@ -40,33 +43,8 @@
             <ul class="navbar-nav ml-auto">
                 <!-- Navbar Search -->
                 <li class="nav-item">
-                    <a class="nav-link" data-widget="navbar-search" href="#" role="button">
-                        <i class="fas fa-search"></i>
-                    </a>
-                    <div class="navbar-search-block">
-                        <form class="form-inline">
-                            <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-                                <div class="input-group-append">
-                                    <button class="btn btn-navbar" type="submit">
-                                        <i class="fas fa-search"></i>
-                                    </button>
-                                    <button class="btn btn-navbar" type="button" data-widget="navbar-search">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" data-widget="fullscreen" href="#" role="button">
                         <i class="fas fa-expand-arrows-alt"></i>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
-                        <i class="fas fa-th-large"></i>
                     </a>
                 </li>
                 <li>
@@ -83,7 +61,9 @@
                 <!-- Sidebar user (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="info">
-                        <a href="#" class="d-block">Wellcome Text Miner App</a>
+                        <a href="#" class="d-block">Wellcome 
+                        @((SignInManager.IsSignedIn(User)) ? @UserManager.GetUserName(User) : "Guest")
+                        </a>
                     </div>
                 </div>
 
@@ -228,48 +208,48 @@
                                 </li>
                             </ul>
                         </li>
-                    @if ((AuthorizationService.AuthorizeAsync(User, "Permissions.Users.Create")).Result.Succeeded)
-                    {
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>
-                                    User Management
-                                    <i class="right fas fa-angle-left"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="~/Users" class="nav-link">
-                                        <p>
-                                            Users
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="~/Roles" class="nav-link">
-                                        <p>
-                                            Roles
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="~/UserRoles" class="nav-link">
-                                        <p>
-                                            User roles
-                                        </p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="~/Permission" class="nav-link">
-                                        <p>
-                                            Permissions
-                                        </p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    }
+                        @if ((AuthorizationService.AuthorizeAsync(User, "Permissions.Users.Create")).Result.Succeeded)
+                        {
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-users"></i>
+                    <p>
+                        User Management
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="~/Users" class="nav-link">
+                            <p>
+                                Users
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="~/Roles" class="nav-link">
+                            <p>
+                                Roles
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="~/UserRoles" class="nav-link">
+                            <p>
+                                User roles
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="~/Permission" class="nav-link">
+                            <p>
+                                Permissions
+                            </p>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+}
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -305,17 +285,7 @@
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    @{ string msg = Context.Session.GetString(discovery.Library.Core.Keys._MSG); }
-                    @if (msg != null && msg != "")
-                    {
-                        //Reset message after presentation
-                        Context.Session.SetString(discovery.Library.Core.Keys._MSG, "");
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            <strong>Text Miner</strong> @(msg).
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>}
+                    @Html.Partial("_MsgBox.cshtml")
                     <div class="row">
                         <div class="col-12">
                             @RenderBody()

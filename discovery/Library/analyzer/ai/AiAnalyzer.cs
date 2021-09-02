@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Annytab.Stemmer;
+using discovery.Library.Core;
 using discovery.Models;
 using Microsoft.ML;
 using Microsoft.ML.Data;
@@ -94,7 +95,7 @@ namespace discovery.Library.analyzer
                 .CreatePredictionEngine<datasetinputanalyzemodel, datasetpredictedmodel>(this._trainedModel);
 
             
-            List<resultviewmodel> foundpatterns = new List<resultviewmodel>();
+            //List<resultviewmodel> foundpatterns = new List<resultviewmodel>();
             var dbcontext = (discoveryContext)this._submitterEngine.GetContext();
 
             var targetSet = dbcontext.dataset.Where(datItem => datItem.scenarioid == this._currentscenario);
@@ -128,34 +129,40 @@ namespace discovery.Library.analyzer
                             foreach (var fndptrn in this._rawdata.Where(a => a.lemmatizedbody.Contains(key)))
                             {
                                 //Check to add to current found keywords
-                                if (foundpatterns.Any(fdpt => fdpt.patternid == fndptrn.ID && fdpt.datasetid == datasetItem.ID))
+                                if (this.results.Any(fdpt => fdpt.patternid == fndptrn.ID && fdpt.datasetitemid == datasetItem.ID))
                                 {
-                                    foundpatterns.First(fdpt => fdpt.patternid == fndptrn.ID && fdpt.datasetid == datasetItem.ID).count += Convert.ToInt32(res.Score[item.Key]);
+                                    this.results.First(fdpt => fdpt.patternid == fndptrn.ID && fdpt.datasetitemid == datasetItem.ID).count += Convert.ToInt32(res.Score[item.Key]);
                                 }
                                 else
                                 {
                                     //Add new found patterns
-                                    foundpatterns.Add(new resultviewmodel()
+                                    this.results.Add(new result()
                                     {
                                         count = Convert.ToInt32(res.Score[item.Key]),
-                                        datasetid = datasetItem.ID,
-                                        patternid = fndptrn.ID
+                                        datasetitemid = datasetItem.ID,
+                                        patternid = fndptrn.ID,
+                                        scenarioid = this._currentscenario                                        
                                     });
                                 }
+
                             }
                         }
                     }
                 }
-            }
+                //Check for memory dump action
+                if (new performancetuner().MemoryOveload(ref this.results))
+                {
+                    //this.SubmitResult();
+                    var emmergency = new emergncyDbContext();
+                    emmergency.result.AddRange(this.results);
+                    emmergency.SaveChanges();
+                    //free dynamic memory
+                    this.results = new List<result>();
+                    //foundpatterns.Clear();
+                    //targetSet.Remove(datasetItem);
+                }
 
-            this.results = foundpatterns.Select(a => new result()
-            {
-                count = a.count,
-                datasetitemid = a.datasetid,
-                patternid = a.patternid,
-                scenarioid = this._currentscenario
             }
-            ).AsQueryable();
         }
 
         public override void SubmitResult()

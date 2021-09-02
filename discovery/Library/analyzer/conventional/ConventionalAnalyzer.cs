@@ -66,7 +66,7 @@ namespace discovery.Library.analyzer
                 patternid = pattern.ID,
                 partofdocument = 1,
                 scenarioid = item.scenarioid
-            }); ;
+            }).ToList(); 
         }
 
         //Hook method for Transform

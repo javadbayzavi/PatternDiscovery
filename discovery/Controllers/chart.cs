@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using discovery.Library.Core;
+using discovery.Library.identity;
 using discovery.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -78,7 +79,7 @@ namespace discovery.Controllers
         public object getPatternRanking()
         {
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario)
+                .Where(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .Include(a => a.pattern).ToList()
                 .GroupBy(a => a.patternid)
                 .Select(outputItem => new patternrankingviewmodel()
@@ -95,7 +96,7 @@ namespace discovery.Controllers
         public object getCategoryRanking()
         {
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario)
+                .Where(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .Include(a => a.pattern).ThenInclude(a => a.category).ToList()
                 .GroupBy(a => a.pattern.categoryId)
                 .Select(a => new categoryrankingviewmodel()
@@ -112,7 +113,7 @@ namespace discovery.Controllers
         public object getAuthorInterested()
         {
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario)
+                .Where(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .Include(a => a.datasetItem).ToList()
                 .GroupBy(a => a.datasetItem.author)
                 .Select(a => new authorrankingviewmodel()
@@ -146,7 +147,7 @@ namespace discovery.Controllers
         {
             var regexpr = new Regex("\\d{4}");
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario)
+                .Where(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .Include(a => a.datasetItem).ToList()
                 .Select(a => new yearrankingviewmodel()
                 {
@@ -170,7 +171,7 @@ namespace discovery.Controllers
         {
             var regexpr = new Regex(discovery.Library.Core.Keys._MONTHREGEXPRESSION);
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario)
+                .Where(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .Include(a => a.datasetItem).ToList()
                 .Select(a => new yearrankingviewmodel()
                 {
@@ -207,7 +208,7 @@ namespace discovery.Controllers
         {
             return this.ormProxy.patterns.Where(pattern =>
                 this.ormProxy.result
-                .Any(item => item.scenarioid == this.currentScenario && item.patternid != pattern.ID))
+                .Any(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId() && item.patternid != pattern.ID))
                 .Select(a => new patternsviewmodel 
                 { 
                     ID = a.ID,
@@ -223,7 +224,7 @@ namespace discovery.Controllers
         {
             var fountnumbers = (float)this.ormProxy.result
                 .Where(item =>
-                item.scenarioid == this.currentScenario)
+                item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .ToList()
                 .GroupBy(a => a.patternid).Count(); 
             var pattenrscnt = (float)this.ormProxy.patterns.Count();
@@ -244,7 +245,7 @@ namespace discovery.Controllers
         {
             var result = (float)this.ormProxy.result
                 .Where(item =>
-                item.scenarioid == this.currentScenario && item.pattern.categoryId == id).
+                item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId() && item.pattern.categoryId == id).
                 ToList()
                 //In order to remove duplicate patterns in result
                 .GroupBy(a => a.patternid)
@@ -266,7 +267,7 @@ namespace discovery.Controllers
         public object subjectWithMostPattern(int top = 10)
         {
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario)
+                .Where(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .Include(a => a.datasetItem).ToList()
                 .GroupBy(a => a.datasetitemid)
                 //Create Anonymous object as output
@@ -286,7 +287,7 @@ namespace discovery.Controllers
         public object subjectWithMostDiversePattern(int top = 10)
         {
             var res = this.ormProxy.result
-                .Where(item => item.scenarioid == this.currentScenario)
+                .Where(item => item.scenarioid == this.currentScenario && item.scenario.ownerID == User.GetUserId())
                 .Include(a => a.datasetItem).ToList()
                 .GroupBy(a => a.datasetitemid)
                 //Create Anonymous object as output
