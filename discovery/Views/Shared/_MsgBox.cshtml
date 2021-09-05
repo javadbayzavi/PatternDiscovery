@@ -20,7 +20,7 @@
         //Reset message after presentation
         Context.Session.SetString(discovery.Library.Core.Keys._MSG, "");
     <div class="alert @(msgType) alert-dismissible fade show" role="alert">
-        <strong>Text Miner</strong> @(msg).
+        <strong>Text Miner</strong> @((msg.Substring(0, 4))).
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
