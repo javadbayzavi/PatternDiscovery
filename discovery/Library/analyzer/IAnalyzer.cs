@@ -15,5 +15,6 @@ namespace discovery.Library.analyzer
         //Customized Submission
         void SubmitResult(ISubmitter submitter);
         void SubmitResult();
+        //Task AnalyzeAsnyc(object pattern);
     }
 }

@@ -105,7 +105,9 @@ namespace discovery.Library.analyzer
             {
                 var res = this._predictionEngine.Predict(new datasetinputanalyzemodel()
                 { 
-                    lemmatizedbody = String.Join(" ", this._stemmerEngine.GetSteamWords(datasetItem.body.Split(" "))) 
+                    //TODO: This is the error prone part of the anlyzing process and must be reviewed
+                    lemmatizedbody = String.Join(" ", this._stemmerEngine.GetSteamWords(datasetItem.body.Split(" ")))
+                    //lemmatizedbody = datasetItem.body
                 });
 
                 VBuffer<ReadOnlyMemory<char>> slotNames = default;
@@ -152,14 +154,11 @@ namespace discovery.Library.analyzer
                 //Check for memory dump action
                 if (new performancetuner().MemoryOveload(ref this.results))
                 {
-                    //this.SubmitResult();
                     var emmergency = new emergncyDbContext();
                     emmergency.result.AddRange(this.results);
                     emmergency.SaveChanges();
                     //free dynamic memory
                     this.results = new List<result>();
-                    //foundpatterns.Clear();
-                    //targetSet.Remove(datasetItem);
                 }
 
             }
@@ -172,6 +171,7 @@ namespace discovery.Library.analyzer
 
             //load result into the submitter context for adding to database
             context.result.AddRange(this.results);
+
             //Do some data transaciton befor submit
             this._submitterEngine.Submit();
         }

@@ -76,7 +76,8 @@ namespace discovery.Controllers
                 TransactionOptions options = new TransactionOptions();
                 options.Timeout = TimeSpan.MaxValue;
                 options.IsolationLevel = IsolationLevel.ReadCommitted;
-                using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required,options))
+                using (var transaction = this.ormProxy.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+                //using (TransactionScope transaction = new TransactionScope(TransactionScopeOption.Required,options))
                 {
 
                     //Delete all previous
@@ -113,7 +114,8 @@ namespace discovery.Controllers
 
                     await this .ormProxy.SaveChangesAsync();
 
-                    transaction.Complete();
+                    //transaction.Complete();
+                    transaction.Commit();
                 }
 
                 this._session.SetString(Keys._MSG, ExceptionType.Info + "Analyzing completed!");
@@ -150,7 +152,7 @@ namespace discovery.Controllers
         // POST: analyze/ai
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ai(int[] id)
+        public async Task<IActionResult> ai(int[] id)
         {
             var sid = Convert.ToInt32(this._session.GetString(Keys._CURRENTSCENARIO));
             try
@@ -194,7 +196,7 @@ namespace discovery.Controllers
                     scen.status = (int)scenariostatus.Analyzed;
                     this.ormProxy.scenario.Update(scen);
 
-                    this.ormProxy.SaveChanges();
+                    await this.ormProxy.SaveChangesAsync();
 
                     transaction.Commit();
                 }

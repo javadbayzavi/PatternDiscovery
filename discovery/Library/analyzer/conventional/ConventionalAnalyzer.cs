@@ -54,6 +54,8 @@ namespace discovery.Library.analyzer
 
             var pattern = context.patterns.First(item => item.ID == id);
 
+            //string[] patternpart = pattern.title.Split(" ");
+
             //Do Conventional text analyze on database engine
             this.results = context.dataset.Where(a =>
             a.body.Contains(pattern.title.ToLower()) == true
